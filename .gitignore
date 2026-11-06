@@ -1,0 +1,16 @@
+# variable de entorno (secret_key)
+.env
+#archivos compilados de python
+__pycache__/
+*.pyc
+
+#base de datos local
+db.sqlite3
+
+#archivos subidos por usuarios
+media/
+
+#configuracion del editor
+.vscode/
+#archivos estaticos compilados
+staticfiles/
