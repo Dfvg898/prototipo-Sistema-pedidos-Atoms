@@ -25,7 +25,6 @@
 
     <a class="visually-hidden-focusable position-absolute p-2 bg-white" href="#contenido">Saltar al contenido</a>
 
-    {% block navbar %}
     <!-- ==========================================
          NAVBAR
          ========================================== -->
@@ -47,7 +46,8 @@
                     <li class="nav-item"><a class="nav-link text-dark" href="/catalogo/#nosotros"><i class="bi bi-heart me-1"></i> Nosotros</a></li>
                     <li class="nav-item"><a class="nav-link text-dark" href="/catalogo/#ubicacion"><i class="bi bi-geo-alt me-1"></i> Ubicación</a></li>
                     {# cada integrante agrega aquí el enlace público de su app #}
-                    {% block nav_publico %}{% endblock %}
+                    {% block nav_publico %}
+                    {% endblock %}
                 </ul>
 
                 <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
@@ -93,7 +93,6 @@
 
         </div>
     </nav>
-    {% endblock navbar %}
 
     <!-- ==========================================
          MENSAJES (django.contrib.messages)
@@ -113,11 +112,15 @@
          CONTENIDO DE CADA PÁGINA
          ========================================== -->
     <main id="contenido" class="flex-grow-1">
-        {% block content %}{% endblock %}
+        {% block content %}
+        
+        {% endblock %}
     </main>
 
     {# Zona para modales y offcanvas propios de cada página (modal de personalizar, carrito, etc.) #}
-    {% block overlays %}{% endblock %}
+    {% block overlays %}
+
+    {% endblock %}
 
     {% block footer %}
     <!-- ==========================================
