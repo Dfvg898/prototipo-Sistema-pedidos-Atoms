@@ -31,7 +31,7 @@
     <nav class="navbar navbar-expand-lg navbar-atoms sticky-top">
         <div class="container">
 
-            <a class="marca" href="/catalogo/" aria-label="Sandwichs Atom's, ir al inicio">
+            <a class="marca" href="{% url 'base' %}" aria-label="Sandwichs Atom's, ir al inicio">
                 <img src="{% static 'catalogo/img/atom.png' %}" alt="Sandwichs Atom's Logo">
             </a>
 
@@ -48,6 +48,21 @@
                     {# cada integrante agrega aquí el enlace público de su app #}
                     {% block nav_publico %}
                     {% endblock %}
+
+                    <!-- Enlaces privados Gestion -->
+                    <nav class="d-flex flex-wrap gap-2 mb-4" aria-label="Gestión del catálogo">
+                        <a href="{% url 'categorias' %}"
+                        class="btn btn-sm {% if activo == 'categorias' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+                            <i class="bi bi-tags me-1"></i> Categorías</a>
+                        <a href="{% url 'productos' %}"
+                        class="btn btn-sm {% if activo == 'productos' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+                            <i class="bi bi-box-seam me-1"></i> Productos</a>
+                        <a href=""
+                        class="btn btn-sm {% if activo == 'opciones' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+                            <i class="bi bi-sliders me-1"></i> Opciones</a>
+                        <a href="" class="btn btn-sm btn-outline-secondary ms-auto">
+                            <i class="bi bi-shop me-1"></i> Ver catálogo</a>
+                    </nav>
                 </ul>
 
                 <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
