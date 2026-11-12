@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Categoria, Producto, OpcionPersonalizacion
-from .forms import CategoriaForm
+from .forms import CategoriaForm, ProductoForm
 
 # Create your views here.
 def homeView(request):
     # Traemos también las categorías y productos para que la página de inicio no se quede vacía
     categorias = Categoria.objects.all()
-    productos = Producto.objects.all()
+    productos = Producto.objects.filter(activo=True)
     
     context = {
         'categorias': categorias,
@@ -88,12 +88,28 @@ def productosListView(request):
     return render(request, "catalogo/producto_list.html", context)
 
 def productosCreateView(request):
-    # Aquí iría la lógica para crear un producto
-    pass
+    form = ProductoForm(request.POST or None, request.FILES or None)
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            return redirect("productos")
+    return render(request, "catalogo/producto_form.html", {"form": form})
 
 def productosUpdateView(request, pk):
-    # Aquí iría la lógica para actualizar un producto
-    pass
+    producto = get_object_or_404(Producto, pk=pk)
+    form = ProductoForm(request.POST or None, request.FILES or None, instance=producto)
+    
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            return redirect("productos")
+            
+    return render(request, "catalogo/producto_form.html", {"form": form, "producto": producto})
 def productosDeleteView(request, pk):
-    # Aquí iría la lógica para eliminar un producto
-    pass
+    producto = get_object_or_404(Producto, pk=pk)
+    if request.method == "POST":
+        producto.activo = not producto.activo
+        producto.save()
+        
+        return redirect("productos")
+    return redirect("productos")
