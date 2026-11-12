@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Categoria, Producto, OpcionPersonalizacion
-from .forms import CategoriaForm, ProductoForm
+from .forms import CategoriaForm, ProductoForm, OpcionPersonalizacionForm
 
 # Create your views here.
 def homeView(request):
@@ -113,3 +113,37 @@ def productosDeleteView(request, pk):
         
         return redirect("productos")
     return redirect("productos")
+
+# opcion de personalizacion
+def opcionesPersonalizacionListView(request):
+    opciones = OpcionPersonalizacion.objects.all()
+    context = {
+        'opciones': opciones,
+    }
+    return render(request, "catalogo/opcion_list.html", context)
+
+def opcionesPersonalizacionCreateView(request):
+    form = OpcionPersonalizacionForm(request.POST or None)
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            return redirect("opciones_personalizacion")
+    return render(request, "catalogo/opcion_form.html", {"form": form})
+
+def opcionesPersonalizacionUpdateView(request, pk):
+    opcion = get_object_or_404(OpcionPersonalizacion, pk=pk)
+    form = OpcionPersonalizacionForm(request.POST or None, instance=opcion)
+    
+    if request.method == "POST":
+        if form.is_valid():
+            form.save()
+            return redirect("opciones_personalizacion")
+            
+    return render(request, "catalogo/opcion_form.html", {"form": form, "opcion": opcion})
+
+def opcionesPersonalizacionDeleteView(request, pk):
+    opcion = get_object_or_404(OpcionPersonalizacion, pk=pk)
+    if request.method == "POST":
+        opcion.delete()
+        return redirect("opciones_personalizacion")
+    return redirect("opciones_personalizacion")
