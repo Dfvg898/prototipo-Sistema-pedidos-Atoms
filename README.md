@@ -16,9 +16,9 @@ Cada gestor es una app de Django a cargo de un integrante. Así cada uno trabaja
 
 | App | Modelos | Historias de usuario |
 |---|---|---|
-| `catalogo` | Categoria, Producto, OpcionPersonalizacion | HU-01 a HU-05 |
-| `pedidos` | Cliente, Pedido, DetallePedido, Pago | HU-06 a HU-11 |
-| `usuarios` | Usuario (con rol), Repartidor, BitacoraEvento | HU-12 a HU-15 |
+| `catalogo` | Categoria, Producto, OpcionPersonalizacion | HU-13, HU-14, HU-15, HU-16, HU-26, HU-29, HU-01, HU-02, HU-03, HU-04 |
+| `pedidos` | Cliente, Pedido, DetallePedido, Pago | HU-09, HU-10, HU-23, HU-24, HU-25, HU-22, HU-30, HU-17, HU-18, HU-19 |
+| `usuarios` | Usuario (con rol), Repartidor, BitacoraEvento | HU-05, HU-06, HU-07, HU-08, HU-11, HU-12, HU-27, HU-28, HU-20, HU-21 |
 
 Dependencias entre apps: `pedidos` usa `Producto` (de `catalogo`) y `Repartidor` (de `usuarios`).
 
