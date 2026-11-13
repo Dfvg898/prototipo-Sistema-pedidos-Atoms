@@ -42,12 +42,9 @@
             <div class="collapse navbar-collapse" id="menuPrincipal">
                 <!-- Enlaces públicos -->
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0 fw-bold text-uppercase">
-                    <li class="nav-item"><a class="nav-link text-dark" href="/catalogo/#menu"><i class="bi bi-grid me-1"></i> Menú</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark" href="/catalogo/#nosotros"><i class="bi bi-heart me-1"></i> Nosotros</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark" href="/catalogo/#ubicacion"><i class="bi bi-geo-alt me-1"></i> Ubicación</a></li>
-                    {# cada integrante agrega aquí el enlace público de su app #}
-                    {% block nav_publico %}
-                    {% endblock %}
+                    <li class="nav-item"><a class="nav-link text-dark" href="/#menu"><i class="bi bi-grid me-1"></i> Menú</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark" href="#"><i class="bi bi-heart me-1"></i> Nosotros</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark" href="#"><i class="bi bi-geo-alt me-1"></i> Ubicación</a></li>
 
                     <!-- Enlaces privados Gestion -->
                     <nav class="d-flex flex-wrap gap-2 mb-4" aria-label="Gestión del catálogo">
@@ -60,8 +57,6 @@
                         <a href="{% url 'opciones_personalizacion' %}"
                         class="btn btn-sm {% if activo == 'opciones' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
                             <i class="bi bi-sliders me-1"></i> Opciones</a>
-                        <a href="" class="btn btn-sm btn-outline-secondary ms-auto">
-                            <i class="bi bi-shop me-1"></i> Ver catálogo</a>
                     </nav>
                 </ul>
 
