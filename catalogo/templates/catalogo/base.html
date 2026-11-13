@@ -1,11 +1,202 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Sandwichs Atom's</title>
+
+    <link rel="icon" type="image/png" href="{% static 'catalogo/img/atom.png' %}">
+
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 e iconos -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <!-- Estilos de la marca (static/css/atoms.css) -->
+    <link href="{% static 'catalogo/css/atoms.css' %}" rel="stylesheet">
+    
 </head>
-<body>
-    <h1>Base</h1>
+<body class="d-flex flex-column min-vh-100 {% block body_class %}{% endblock %}">
+
+    <a class="visually-hidden-focusable position-absolute p-2 bg-white" href="#contenido">Saltar al contenido</a>
+
+    <!-- ==========================================
+         NAVBAR
+         ========================================== -->
+    <nav class="navbar navbar-expand-lg navbar-atoms sticky-top">
+        <div class="container">
+
+            <a class="marca" href="{% url 'lista' %}" aria-label="Sandwichs Atom's, ir al inicio">
+                <img src="{% static 'catalogo/img/atom.png' %}" alt="Sandwichs Atom's Logo">
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#menuPrincipal" aria-controls="menuPrincipal" aria-expanded="false" aria-label="Navegación">
+                <i class="bi bi-list fs-2 text-dark"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="menuPrincipal">
+                <!-- Enlaces públicos -->
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 fw-bold text-uppercase">
+                    <li class="nav-item"><a class="nav-link text-dark" href="/#menu"><i class="bi bi-grid me-1"></i> Menú</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark" href="#"><i class="bi bi-heart me-1"></i> Nosotros</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark" href="#"><i class="bi bi-geo-alt me-1"></i> Ubicación</a></li>
+
+                    <!-- Enlaces privados Gestion -->
+                    <nav class="d-flex flex-wrap gap-2 mb-4" aria-label="Gestión del catálogo">
+                        <a href="{% url 'categorias' %}"
+                        class="btn btn-sm {% if activo == 'categorias' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+                            <i class="bi bi-tags me-1"></i> Categorías</a>
+                        <a href="{% url 'productos' %}"
+                        class="btn btn-sm {% if activo == 'productos' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+                            <i class="bi bi-box-seam me-1"></i> Productos</a>
+                        <a href="{% url 'opciones_personalizacion' %}"
+                        class="btn btn-sm {% if activo == 'opciones' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+                            <i class="bi bi-sliders me-1"></i> Opciones</a>
+                    </nav>
+                </ul>
+
+                <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+
+                    {% if user.is_authenticated %}
+                    <!-- Menú de gestión: solo para el personal con sesión iniciada -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-gear me-1"></i> Gestión
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {# cada integrante agrega aquí el enlace de gestión de su app #}
+                            {% block nav_gestion %}{% endblock %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li class="dropdown-item-text small text-secondary">
+                                <i class="bi bi-person-circle"></i> {{ user.get_username }}
+                            </li>
+                            <li>
+                                <form method="post" action="/usuarios/logout/">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <a href="/usuarios/login/" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-person-circle me-1"></i> Iniciar sesión
+                    </a>
+                    {% endif %}
+
+                    <!-- Botón del carrito (el offcanvas #carro lo define la app de pedidos) -->
+                    {% block boton_carrito %}
+                    <button type="button" class="btn btn-carrito position-relative ms-2" data-bs-toggle="offcanvas" data-bs-target="#carro" aria-controls="carro" aria-label="Abrir mi pedido">
+                        <i class="bi bi-cart3"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill badge-carro">{{ cantidad_carrito|default:0 }}</span>
+                    </button>
+                    {% endblock %}
+                </div>
+            </div>
+
+        </div>
+    </nav>
+
+    <!-- ==========================================
+         MENSAJES (django.contrib.messages)
+         ========================================== -->
+    {% if messages %}
+    <div class="container mt-3" aria-live="polite">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- ==========================================
+         CONTENIDO DE CADA PÁGINA
+         ========================================== -->
+    <main id="contenido" class="flex-grow-1">
+        {% block content %}
+        
+        {% endblock %}
+    </main>
+
+    {# Zona para modales y offcanvas propios de cada página (modal de personalizar, carrito, etc.) #}
+    {% block overlays %}
+
+    {% endblock %}
+
+    {% block footer %}
+    <!-- ==========================================
+         FOOTER
+         ========================================== -->
+    <footer class="bg-dark text-white pt-5 pb-3 border-top mt-5">
+        <div class="container">
+            <div class="row g-4">
+
+                <div class="col-lg-4">
+                    <a class="marca mb-3 d-inline-block" href="/catalogo/">
+                        <img src="{% static 'catalogo/img/atom.png' %}" alt="Sandwichs Atom's" style="height: 50px;">
+                    </a>
+                    <p class="small text-light">Tu sanguchería favorita. Preparaciones artesanales con ingredientes de primera calidad para retiro en local o despacho a domicilio.</p>
+                    <div class="d-flex gap-3 fs-5">
+                        <a href="#" class="text-white" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-white" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-white" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-6 col-lg-2">
+                    <h4 class="h6 text-uppercase fw-bold text-warning">Menú</h4>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="/catalogo/#menu" class="text-decoration-none text-light">Catálogo</a></li>
+                        <li class="mb-2"><a href="/catalogo/#nosotros" class="text-decoration-none text-light">Nosotros</a></li>
+                        <li class="mb-2"><a href="/catalogo/#ubicacion" class="text-decoration-none text-light">Ubicación</a></li>
+                        {% if not user.is_authenticated %}
+                        <li class="mb-2"><a href="/usuarios/login/" class="text-decoration-none text-light">Iniciar sesión</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="col-6 col-lg-3">
+                    <h4 class="h6 text-uppercase fw-bold text-warning">Horarios</h4>
+                    <ul class="list-unstyled small text-light">
+                        <li class="mb-1"><i class="bi bi-clock me-1"></i> <strong>Mar–Dom:</strong> 18:30 – 1:30</li>
+                        <li class="mb-1"><i class="bi bi-clock me-1"></i> <strong>Lun:</strong> Cerrado</li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3">
+                    <h4 class="h6 text-uppercase fw-bold text-warning">Contacto</h4>
+                    <ul class="list-unstyled small text-light">
+                        <li class="mb-2"><i class="bi bi-geo-alt-fill me-1"></i> Av. Principal #1234</li>
+                        <li class="mb-2"><i class="bi bi-telephone-fill me-1"></i> +56 9 1234 5678</li>
+                        <li class="mb-2"><i class="bi bi-envelope-fill me-1"></i> contacto@sandwichsatoms.cl</li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <hr class="my-4 border-secondary">
+
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center small text-secondary">
+                <p class="mb-0">&copy; {% now "Y" %} Sandwichs Atom's. Todos los derechos reservados.</p>
+                <p class="mb-0">Diseñado para la atención y gestión de pedidos express.</p>
+            </div>
+        </div>
+    </footer>
+    {% endblock footer %}
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+    {# Cada app puede agregar sus propios scripts aquí #}
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
