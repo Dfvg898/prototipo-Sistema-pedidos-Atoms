@@ -30,6 +30,11 @@ class Producto(models.Model):
     def __str__(self):
         return self.nombre
 
+    # Filtrar opciones activas en este producto
+    @property
+    def opciones_activas(self):
+        return self.opciones.filter(activa=True)
+
 class OpcionPersonalizacion(models.Model):
     """Ingrediente, salsa o extra que el cliente puede elegir en un producto."""
  

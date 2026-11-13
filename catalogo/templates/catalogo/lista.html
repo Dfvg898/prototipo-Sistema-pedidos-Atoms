@@ -37,9 +37,9 @@
         </nav>
 
     </div>
+
     <!-- Cards de productos -->
     <div class="row g-4">
-        <div class="row g-4">
     {% for p in productos %}
     <div class="col-12 col-sm-6 col-lg-3">
         <article class="card h-100 position-relative">
@@ -65,7 +65,15 @@
                     <button type="button" class="btn btn-primary"
                             data-bs-toggle="modal" data-bs-target="#modalProducto{{ p.pk }}">Personalizar</button>
                     {% else %}
-                    <button type="button" class="btn btn-primary" data-producto="{{ p.pk }}">Agregar</button>
+                    {% if p.opciones_activas %}
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalProducto{{ p.pk }}">
+                            Personalizar
+                        </button>
+                        {% else %}
+                        <button type="button" class="btn btn-primary" data-producto="{{ p.pk }}">
+                            Agregar
+                        </button>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -78,8 +86,67 @@
         </div>
     </div>
     {% endfor %}
-</div>
     </div>
 </section>
 
 {% endblock content %}
+
+<!-- Modal de personalización -->
+ 
+{% block overlays %}
+{% for p in productos %}
+{% if p.opciones_activas %}
+<div class="modal fade" id="modalProducto{{ p.pk }}" tabindex="-1"
+     aria-labelledby="tituloModal{{ p.pk }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content" data-precio-base="{{ p.precio_base }}">
+
+            <div class="modal-header">
+                <h2 class="modal-title h5" id="tituloModal{{ p.pk }}">Personaliza tu {{ p.nombre|lower }}</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-body">
+                {# Las opciones vienen ordenadas por tipo: ingrediente, salsa, extra #}
+                {% regroup p.opciones_activas by tipo as grupos %}
+                {% for grupo in grupos %}
+                <div class="border rounded-3 px-3 py-2 mb-3">
+                    <h3 class="h6 fw-bold mt-1">{{ grupo.list.0.get_tipo_display }}s</h3>
+                    {% for o in grupo.list %}
+                    <div class="form-check py-1">
+                        <input class="form-check-input opcion-precio" type="checkbox"
+                               id="op{{ p.pk }}_{{ o.pk }}" name="opciones" value="{{ o.pk }}"
+                               data-precio="{{ o.precio_extra }}"
+                               {% if o.tipo == 'ingrediente' %}checked{% endif %}>
+                        <label class="form-check-label" for="op{{ p.pk }}_{{ o.pk }}">
+                            {{ o.nombre }}{% if o.precio_extra %} (+${{ o.precio_extra }}){% endif %}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+
+                <div class="mb-3">
+                    <label for="nota{{ p.pk }}" class="form-label">Nota para el local (opcional)</label>
+                    <input type="text" class="form-control" id="nota{{ p.pk }}" maxlength="200" placeholder="Ej. Cortar en dos">
+                </div>
+
+                <label for="cantidad{{ p.pk }}" class="form-label">Cantidad</label>
+                <input type="number" class="form-control w-25 cantidad-producto"
+                       id="cantidad{{ p.pk }}" value="1" min="1" max="20">
+            </div>
+
+            <div class="modal-footer justify-content-between">
+                <span class="producto-precio total-modal fs-5 fw-bold text-primary">${{ p.precio_base }}</span>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary btn-agregar-pedido" data-producto="{{ p.pk }}">Agregar al pedido</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+{% endblock overlays %}
