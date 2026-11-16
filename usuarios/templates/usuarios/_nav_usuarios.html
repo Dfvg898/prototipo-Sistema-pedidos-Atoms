@@ -1,0 +1,14 @@
+<div class="d-flex flex-wrap gap-2 mb-4" aria-label="Navegación de seguridad y usuarios">
+    <a href="{% url 'usuarios_personal' %}"
+       class="btn btn-sm {% if seccion_usuarios == 'personal' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+        <i class="bi bi-people me-1"></i> Personal y Roles
+    </a>
+    <a href="{% url 'usuarios_repartidores' %}"
+       class="btn btn-sm {% if seccion_usuarios == 'repartidores' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+        <i class="bi bi-bicycle me-1"></i> Repartidores
+    </a>
+    <a href="{% url 'usuarios_bitacora' %}"
+       class="btn btn-sm {% if seccion_usuarios == 'bitacora' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+        <i class="bi bi-shield-check me-1"></i> Bitácora de Eventos
+    </a>
+</div>
