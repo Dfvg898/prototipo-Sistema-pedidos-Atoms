@@ -1,0 +1,26 @@
+{% extends "catalogo/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container my-5">
+
+    {% include "usuarios/_nav_usuarios.html" %}
+
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="panel">
+                <h1 class="h3 mb-4">{% if object %}Editar{% else %}Nuevo{% endif %} usuario del personal</h1>
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="d-flex gap-2 mt-3">
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <a href="{% url 'usuarios_personal' %}" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

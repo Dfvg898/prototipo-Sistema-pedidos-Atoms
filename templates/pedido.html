@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos</title>
+    <link href="pedido.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</head>
+
+<body class="fondo-pedidos">
+
+    
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="catalogo.html">ATOMS</a>
+            <span class="navbar-text small"><i class="bi bi-circle-fill text-success"></i> En vivo · actualizado hace 5 s</span>
+        </div>
+    </nav>
+
+    <main class="container-fluid py-3">
+        <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+            <h1 class="h4 mb-0 me-3">Pedidos activos</h1>
+            <div class="btn-group btn-group-sm" role="group" aria-label="Filtro por canal">
+                <button type="button" class="btn btn-primary">Todos</button>
+                <button type="button" class="btn btn-outline-primary">Web</button>
+                <button type="button" class="btn btn-outline-primary">WhatsApp</button>
+                <button type="button" class="btn btn-outline-primary">Mesón</button>
+            </div>
+
+            <select class="form-select form-select-sm w-auto ms-auto" aria-label="Ordenar pedidos por hora de ingreso">
+                <option selected>Hora de ingreso: más antiguo primero</option>
+                <option>Hora de ingreso: más reciente primero</option>
+            </select>
+        </div>
+
+
+        
+        <div class="row g-3">
+
+            
+            <div class="col-12 col-md-6 col-xl-3">
+                <section class="columna columna-recibido" aria-label="Pedidos recibidos">
+                    <h2 class="columna-titulo">Recibido <span class="contador-columna">2</span></h2>
+                    
+                    <article class="tarjeta-pedido">
+                        <div class="pedido-cabecera">
+                            <span class="pedido-folio">#0001</span>
+                            <span class="etiqueta-canal canal-whatsapp">WhatsApp</span>
+                        </div>
+                        <p class="pedido-cliente">Diego Q.</p>
+                        <p class="pedido-detalle"><i class="bi bi-clock"></i> 19:42  Despacho a domicilio</p>
+                        <ul class="pedido-productos">
+                            <li>1 x Completo italiano (sin tomate, etc)</li>
+                            <li>1 x Bebida 500 ml</li>
+                        </ul>
+                        <p class="pedido-total">$4.300</p>
+                            <div class="acciones-pedido">
+                                
+                                <button type="button" class="boton-estado"><i class="bi bi-arrow-right-circle"></i> Pasar a preparación</button>
+                                <button type="button" class="boton-cancelar" data-bs-toggle="modal" data-bs-target="#modalCancelar"><i class="bi bi-x-circle"></i> Cancelar pedido</button>
+                            </div>
+                    </article>
+
+                    <article class="tarjeta-pedido">
+                        <div class="pedido-cabecera">
+                            <span class="pedido-folio">#0001</span>
+                            <span class="etiqueta-canal canal-whatsapp">WhatsApp</span>
+                        </div>
+                        <p class="pedido-cliente">Diego Q.</p>
+                        <p class="pedido-detalle"><i class="bi bi-clock"></i> 19:42  Despacho a domicilio</p>
+                        <ul class="pedido-productos">
+                            <li>1 x Completo italiano (sin tomate, etc)</li>
+                            <li>1 x Bebida 500 ml</li>
+                        </ul>
+                        <p class="pedido-total">$4.300</p>
+                            <div class="acciones-pedido">
+                                
+                                <button type="button" class="boton-estado"><i class="bi bi-arrow-right-circle"></i> Pasar a preparación</button>
+                                <button type="button" class="boton-cancelar" data-bs-toggle="modal" data-bs-target="#modalCancelar"><i class="bi bi-x-circle"></i> Cancelar pedido</button>
+                            </div>
+                    </article>
+            </div>
+
+            
+            <div class="col-12 col-md-6 col-xl-3">
+                <section class="columna columna-preparacion" aria-label="Pedidos en preparación">
+                    <h2 class="columna-titulo">En preparación <span class="contador-columna-preparacion">1</span></h2>
+                    
+                    <article class="tarjeta-pedido">
+                        <div class="pedido-cabecera">
+                            <span class="pedido-folio">#0002</span>
+                            <span class="etiqueta-canal canal-meson">Mesón</span>
+                        </div>
+                        <p class="pedido-cliente">Diego Q.</p>
+                        <p class="pedido-detalle"><i class="bi bi-clock"></i> 19:55  Retiro en local</p>
+                        <ul class="pedido-productos">
+                            <li>1 x Completo italiano</li>
+                        </ul>
+                        <p class="pedido-total">$2.800</p>
+                            <div class="acciones-pedido">
+                                
+                                <button type="button" class="boton-estado"><i class="bi bi-check-circle"></i> Marcar como listo</button>
+                                <button type="button" class="boton-cancelar" data-bs-toggle="modal" data-bs-target="#modalCancelar"><i class="bi bi-x-circle"></i> Cancelar pedido</button>
+                            </div>
+                    </article>
+            </div>
+
+            
+            <div class="col-12 col-md-6 col-xl-3">
+                <section class="columna columna-listo" aria-label="Pedidos en listos">
+                    <h2 class="columna-titulo">Listo <span class="contador-columna-listo">1</span></h2>
+                    
+                    <article class="tarjeta-pedido">
+                        <div class="pedido-cabecera">
+                            <span class="pedido-folio">#0003</span>
+                            <span class="etiqueta-canal canal-web">Web</span>
+                        </div>
+                        <p class="pedido-cliente">Diego Q.</p>
+                        <p class="pedido-detalle"><i class="bi bi-clock"></i> 20:10 · Retiro en local</p>
+                        <ul class="pedido-productos">
+                            <li>1 x Barros Luco</li>
+                            <li>1 x Bebida 500 ml</li>
+                        </ul>
+                        <p class="pedido-total">$5.700</p>
+                            <div class="acciones-pedido">
+                                
+                                <button type="button" class="boton-estado"><i class="bi bi-truck"></i> Marcar en camino</button>
+                                <button type="button" class="boton-cancelar" data-bs-toggle="modal" data-bs-target="#modalCancelar"><i class="bi bi-x-circle"></i> Cancelar pedido</button>
+                            </div>
+                    </article>
+            </div>
+
+            
+            <div class="col-12 col-md-6 col-xl-3">
+                <section class="columna columna-camino" aria-label="Pedidos en camino">
+                    <h2 class="columna-titulo">En camino <span class="contador-columna-camino">1</span></h2>
+                    
+                    <article class="tarjeta-pedido">
+                        <div class="pedido-cabecera">
+                            <span class="pedido-folio">#0004</span>
+                            <span class="etiqueta-canal canal-whatsapp">WhatsApp</span>
+                        </div>
+                        <p class="pedido-cliente">Diego Q.</p>
+                        <p class="pedido-detalle"><i class="bi bi-clock"></i> 20:15   Despacho a domicilio</p>
+                        <ul class="pedido-productos">
+                            <li>2 x Completo italiano</li>
+                        </ul>
+                        <p class="pedido-total">$5.600</p>
+                            <div class="acciones-pedido">
+                                
+                                <button type="button" class="boton-estado"><i class="bi bi-bag-check"></i> Marcar como entregado</button>
+                                <button type="button" class="boton-cancelar" data-bs-toggle="modal" data-bs-target="#modalCancelar"><i class="bi bi-x-circle"></i> Cancelar pedido</button>
+                            </div>
+                    </article>
+                </section>
+            </div>
+
+    
+    <div class="modal fade" id="modalCancelar" tabindex="-1" aria-labelledby="tituloCancelar" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content ventana">
+
+                <div class="modal-header">
+                    <h2 class="ventana-titulo" id="tituloCancelar">Cancelar pedido</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+
+                <div class="modal-body">
+                    <label for="motivo" class="etiqueta-campo">Motivo de la cancelación</label>
+                    <select class="campo" id="motivo">
+                        <option selected disabled>Selecciona un motivo</option>
+                        <option>El cliente se arrepintió</option>
+                        <option>Producto sin stock</option>
+                        <option>Pago no confirmado</option>
+                        <option>Otro</option>
+                    </select>
+                    <label for="detalle" class="etiqueta-campo">Detalle (opcional)</label>
+                    <textarea class="campo" id="detalle" rows="3"></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="boton-secundario" data-bs-dismiss="modal">Volver</button>
+                    <button type="button" class="boton-peligro" data-bs-dismiss="modal">Confirmar cancelación</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+            
+
+                    
+    </main>
+
+</body>
+</html>
