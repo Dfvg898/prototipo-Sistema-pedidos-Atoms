@@ -20,7 +20,7 @@ class Pedido(models.Model):
     ESTADOS = [
         ('RECI', 'Recibido'),
         ('PREP', 'En preparacion'),
-        ('LIST', 'List'),
+        ('LIST', 'Listo'),
         ('ECAM', 'En camino'),
         ('ENTR', 'Entregado'),
         ('CANC', 'Cancelado'),
@@ -48,7 +48,7 @@ class Pedido(models.Model):
     costo_despacho = models.PositiveBigIntegerField(default=0)
     total = models.PositiveBigIntegerField(default=0)
     estado = models.CharField(max_length=15, choices=ESTADOS, default='RECI')
-    repartidor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='Pedidos_asignados')
+    repartidor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='pedidos')
 
     def calcular_total(self):
         subtotal = 0
@@ -81,7 +81,7 @@ class DetallePedido(models.Model):
 class Pago(models.Model):
     MEDIOS_PAGO = [
         ('EFEC', 'Efectivo'),
-        ('TRANS', 'Transferencia'),
+        ('TRAN', 'Transferencia'),
         ('TARJ', 'Tarjeta / Mercado Pago'),
     ]
 
