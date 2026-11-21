@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATOMS | Historial y reportes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="historial.css">
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="historial.html">ATOMS</a>
+            <span class="navbar-text">Gestor de historial y reportes</span>
+        </div>
+    </nav>
+
+    <main class="container py-4">
+        <header class="mb-4">
+            <h1 class="h3">Historial de pedidos</h1>
+            <p class="text-secondary">Consulta los pedidos registrados y revisa los datos de ventas.</p>
+        </header>
+
+        <section class="panel mb-4">
+            <h2 class="h5 mb-3">Buscar pedidos</h2>
+            <form>
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label for="fechaInicio" class="form-label">Fecha desde</label>
+                        <input type="date" class="form-control" id="fechaInicio">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="fechaFin" class="form-label">Fecha hasta</label>
+                        <input type="date" class="form-control" id="fechaFin">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="cliente" class="form-label">Cliente o folio</label>
+                        <input type="search" class="form-control" id="cliente" placeholder="Nombre o número de pedido">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-primary w-100">Buscar</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <section class="panel">
+            <h2 class="h5 mb-3">Pedidos registrados</h2>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Folio</th>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Detalle</th>
+                            <th>Total</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>AT-1001</strong></td>
+                            <td>18-10-2026</td>
+                            <td>Camila Rojas</td>
+                            <td>2 completos italianos</td>
+                            <td>$5.600</td>
+                            <td><span class="badge text-bg-success">Entregado</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>AT-1002</strong></td>
+                            <td>18-10-2026</td>
+                            <td>Matías Pérez</td>
+                            <td>1 churrasco italiano</td>
+                            <td>$4.500</td>
+                            <td><span class="badge text-bg-danger">Cancelado</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>AT-1003</strong></td>
+                            <td>19-10-2026</td>
+                            <td>Sofía Díaz</td>
+                            <td>1 Barros Luco, 1 bebida</td>
+                            <td>$5.700</td>
+                            <td><span class="badge text-bg-primary">Listo</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>AT-1004</strong></td>
+                            <td>19-10-2026</td>
+                            <td>Diego Torres</td>
+                            <td>1 completo italiano</td>
+                            <td>$2.800</td>
+                            <td><span class="badge text-bg-warning">En preparación</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <div class="row g-3 mt-1">
+            <div class="col-md-6">
+                <section class="panel">
+                    <h2 class="h5">Resumen de ventas</h2>
+                    <p class="text-secondary mb-1">Ventas totales de ejemplo</p>
+                    <p class="numero-resumen">$86.400</p>
+                    <p class="small text-secondary mb-0">Valores demostrativos para la presentación del sistema.</p>
+                </section>
+            </div>
+            <div class="col-md-6">
+                <section class="panel">
+                    <h2 class="h5">Productos más vendidos</h2>
+                    <div class="producto-reporte"><span>Completo italiano</span><strong>18 unidades</strong></div>
+                    <div class="producto-reporte"><span>Churrasco italiano</span><strong>14 unidades</strong></div>
+                    <div class="producto-reporte"><span>Barros Luco</span><strong>9 unidades</strong></div>
+                </section>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

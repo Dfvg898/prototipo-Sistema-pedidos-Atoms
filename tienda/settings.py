@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'catalogo',
+    'usuarios',
+    'pedidos',
     'crispy_forms',
     'crispy_bootstrap5',
 ]
@@ -51,6 +53,8 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MESSAGE_TAGS = {messages.ERROR: 'danger'}
+
+AUTH_USER_MODEL = 'usuarios.Usuario'
 
 # rutas de autenticación(app usuarios)
 LOGIN_URL = '/usuarios/login/'

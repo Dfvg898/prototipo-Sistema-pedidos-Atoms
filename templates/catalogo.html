@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogo</title>
+    <link href="catalogo.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</head>
+<body>
+
+    
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+
+            
+            <a class="navbar-brand fw-bold" href="catalogo.html">ATOMS</a>
+
+            
+            <div class="dropdown">
+                <button
+                    class="btn btn-outline-light dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="bi bi-list"></i> Menú
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href="catalogo.html">
+                            <i class="bi bi-grid"></i> Catálogo
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="pedido.html">
+                            <i class="bi bi-clipboard-check"></i> Gestor de pedidos
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="pagos.html">
+                            <i class="bi bi-credit-card"></i> Pagos
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="historial.html">
+                            <i class="bi bi-clock-history"></i> Historial de pedidos
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="delivery.html">
+                            <i class="bi bi-bicycle"></i> Gestor de delivery
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="datos-entrega.html">
+                            <i class="bi bi-geo-alt"></i> Datos de entrega
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="notificaciones.html">
+                            <i class="bi bi-bell"></i> Notificaciones
+                        </a>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <a class="dropdown-item" href="acceso.html">
+                            <i class="bi bi-person-circle"></i> Iniciar sesión / Cuenta
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+        
+        <button
+            type="button"
+            class="btn btn-light position-relative"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#carro"
+            aria-controls="carro">
+
+            <i class="bi bi-cart3"></i>
+
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                3
+            </span>
+        </button>
+
+    </div>
+</nav>
+
+
+    
+<div class="container my-4">
+    <div class="row g-3">
+
+        
+        <div class="col-12 col-sm-6 col-lg-4">
+            <section class="card h-100">
+                <img src="img/atom.png" class="card-img-top" alt="Completo italiano">
+                <div class="card-body">
+                    <h5 class="card-title">Completo italiano</h5>
+                    <p class="card-text">Vienesa, tomate, palta y mayonesa.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="producto-precio">$2.800</span>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPersonalizar">Personalizar</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        
+        <div class="col-12 col-sm-6 col-lg-4">
+            <section class="card h-100">
+                <img src="img/atom.png" class="card-img-top" alt="Churrasco italiano">
+                <div class="card-body">
+                    <h5 class="card-title">Churrasco italiano</h5>
+                    <p class="card-text">Churrasco, tomate, palta y mayonesa.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="producto-precio">$4.500</span>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPersonalizar">Personalizar</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        
+        <div class="col-12 col-sm-6 col-lg-4">
+            <section class="card h-100">
+                <img src="img/atom.png" class="card-img-top" alt="Producto">
+                <div class="card-body">
+                    <h5 class="card-title">Barros Luco</h5>
+                    <p class="card-text">Carne de res a la plancha con queso derretido.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="producto-precio">$4.200</span>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPersonalizar">Personalizar</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        
+        <div class="col-12 col-sm-6 col-lg-4">
+            <section class="card h-100">
+                <img src="img/atom.png" class="card-img-top" alt="Producto">
+                <div class="card-body">
+                    <h5 class="card-title">Bebida 500 ml</h5>
+                    <p class="card-text">Bebida de 500 ml con sabor a coca cola.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="producto-precio">$1.500</span>
+                        <button type="button" class="btn btn-primary">Agregar</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="modalPersonalizar" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h2 class="modal-title h5" id="tituloModal">Personaliza tu completo italiano</h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+
+            <div class="modal-body">
+                <h6>Ingredientes</h6>
+        <div class="form-check ingrediente">
+            <input class="form-check-input" type="checkbox" id="palta" checked>
+            <label class="form-check-label" for="palta">Palta</label>
+        </div>
+        <div class="form-check ingrediente">
+            <input class="form-check-input" type="checkbox" id="tomate" checked>
+            <label class="form-check-label" for="tomate">Tomate</label>
+        </div>
+        <div class="form-check ingrediente">
+            <input class="form-check-input" type="checkbox" id="mayonesa" checked>
+            <label class="form-check-label" for="mayonesa">Mayonesa</label>
+        </div>
+
+                <h6 class="mt-3">Extras</h6>
+        <div class="form-check ingrediente">
+            <input class="form-check-input" type="checkbox" id="queso">
+            <label class="form-check-label" for="queso">Queso extra (+$500)</label>
+        </div>
+        <div class="form-check ingrediente">
+            <input class="form-check-input" type="checkbox" id="papas">
+            <label class="form-check-label" for="papas">Papas fritas (+$500)</label>
+        </div>
+
+                <h6 class="mt-3">Cantidad</h6>
+                <input type="number" class="form-control w-25" id="cantidad" value="1" min="1">
+            </div>
+
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary">Agregar al pedido</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="carro" aria-labelledby="tituloCarro">
+    <div class="offcanvas-header">
+        <h2 class="offcanvas-title h5" id="tituloCarro">Mi pedido</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item px-0 d-flex justify-content-between">
+                <div>
+                    <div class="fw-semibold">1 x Completo italiano</div>
+                    <small class="text-muted">Sin tomate , Queso extra</small>
+                </div>
+                <span>$3.300</span>
+            </li>
+            <li class="list-group-item px-0 d-flex justify-content-between">
+                <div>
+                    <div class="fw-semibold">1 x Barros Luco</div>
+                    <small class="text-muted">Sin personalización</small>
+                </div>
+                <span>$4.200</span>
+            </li>
+            <li class="list-group-item px-0 d-flex justify-content-between">
+                <div class="fw-semibold">1 x Bebida 500 ml</div>
+                <span>$1.500</span>
+            </li>
+        </ul>
+
+        
+        <div class="mt-auto border-top pt-3">
+            <div class="d-flex justify-content-between">
+                <span>Subtotal</span>
+                <span>$9.000</span>
+            </div>
+            <div class="d-flex justify-content-between text-muted">
+                <span>Despacho a domicilio</span>
+                <span>$2.000</span>
+            </div>
+            <div class="d-flex justify-content-between fw-bold fs-5 mt-2">
+                <span>Total</span>
+                <span>$11.000</span>
+            </div>
+        </div>
+    </div>
+</div>
+    
+</body>
+</html>
