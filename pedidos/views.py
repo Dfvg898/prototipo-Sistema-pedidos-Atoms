@@ -13,23 +13,23 @@ from usuarios.models import Usuario, Repartidor
 def ver_pedidos(request):
     #Consulta el pedido segun su estado
     pedidos_recibidos = Pedido.objects.filter(
-        estado='RECIBIDO'
+        estado='RECI'
     ).order_by('fecha_creacion')
 
     pedidos_preparacion = Pedido.objects.filter(
-        estado='PREPARACION'
+        estado='PREP'
     ).order_by('fecha_creacion')
 
     pedidos_listos = Pedido.objects.filter(
-        estado='LISTO'
+        estado='LIST'
     ).order_by('fecha_creacion')
 
     pedidos_camino = Pedido.objects.filter(
-        estado='EN_CAMINO'
+        estado='ECAM'
     ).order_by('fecha_creacion')
 
     #Se envia el pedido a la plantilla html
-    return render(request, 'pedidos/pedido.html', {
+    return render(request, "pedidos/pedido.html", {
         'pedidos_recibidos': pedidos_recibidos,
         'pedidos_preparacion': pedidos_preparacion,
         'pedidos_listos': pedidos_listos,

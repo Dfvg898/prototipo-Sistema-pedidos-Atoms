@@ -1,0 +1,238 @@
+{% extends "catalogo/base.html" %}
+{% load static %}
+{% block content %}
+<body class="fondo-pedidos">
+    
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{% url 'lista' %}">ATOMS</a>
+            <span class="navbar-text small"><i class="bi bi-circle-fill text-success"></i> En vivo · actualizado hace 5 s</span>
+        </div>
+    </nav>
+
+    <main class="container-fluid py-3">
+        <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+            <h1 class="h4 mb-0 me-3">Pedidos activos</h1>
+            <div class="btn-group btn-group-sm" role="group" aria-label="Filtro por canal">
+                <button type="button" class="btn btn-primary">Todos</button>
+                <button type="button" class="btn btn-primary">Web</button>
+                <button type="button" class="btn btn-primary">WhatsApp</button>
+                <button type="button" class="btn btn-primary">Mesón</button>
+            </div>
+
+            <select class="form-select form-select-sm w-auto ms-auto" aria-label="Ordenar pedidos por hora de ingreso">
+                <option selected>Hora de ingreso: más antiguo primero</option>
+                <option>Hora de ingreso: más reciente primero</option>
+            </select>
+        </div>
+        <div class="row g-3">        
+            <div class="col-12 col-md-6 col-xl-3">
+                <section class="columna columna-recibido" aria-label="Pedidos recibidos">
+                    <h2 class="columna-titulo">Recibido <span class="contador-columna">{{ pedidos_recibidos|length }}</span></h2>
+                    
+                    {% for pedido in pedidos_recibidos %}
+                    <article class="tarjeta-pedido">
+                        <div class="pedido-cabecera">
+                            <span class="pedido-folio">#{{ pedido.folio }}</span>
+                            <span class="etiqueta-canal canal-whatsapp">{{ pedido.get_origen_display }}</span>
+                        </div>
+                        <p class="pedido-cliente">{{ pedido.cliente.nombre }}</p>
+                        <p class="pedido-detalle"><i class="bi bi-clock"></i> {{ pedido.fecha_creacion|date:"H:i" }} | {{ pedido.get_modalidad_entrega_display }}</p>
+                        <ul class="pedido-productos">
+                            {% for detalle in pedido.detalle.all %}
+                            <li> {{ detalle.cantidad }} x {{ detalle.nombre_producto }} {% if detalle.personalizacion %} ({{ detalle.personalizacion }}) {% endif %}</li>
+                            {% empty %}
+                            <li>Sin productos registrados</li>
+                            {% endfor %}
+                        </ul>
+                        <p class="pedido-total">${{ pedido.total }}</p>
+                        <div class="acciones-pedido">
+                                
+                            <form method="POST" action="{% url 'cambiar_estado' pedido.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="estado" value="PREP">
+                                <button type="submit" class="boton-estado"><i class="bi bi-arrow-right-circle"></i> Pasar a preparación</button>
+                            </form> 
+                            <button type="button" class="boton-cancelar" data-bs-toggle="modal" data-bs-target="#modalCancelar" data-pedido="{{ pedido.id }}"><i class="bi bi-x-circle"></i> Cancelar pedido</button>
+                        </div>
+                    </article>
+                    {% empty %}
+                    <p>No hay pedidos recibidos.</p>
+                    {% endfor %}   
+                </section>
+            </div>
+            
+            <div class="col-12 col-md-6 col-xl-3">
+                <section class="columna columna-preparacion" aria-label="Pedidos en preparación">
+                    <h2 class="columna-titulo">En preparación <span class="contador-columna-preparacion">{{ pedidos_preparacion|length }}</span></h2>
+                    
+                    {% for pedido in pedidos_preparacion %}
+                    <article class="tarjeta-pedido">
+                        <div class="pedido-cabecera">
+                            <span class="pedido-folio">#{{ pedido.folio }}</span>
+                            <span class="etiqueta-canal canal-meson">{{ pedido.get_origen_display }}</span>
+                        </div>
+                        <p class="pedido-cliente">{{ pedido.cliente.nombre }}</p>
+                        <p class="pedido-detalle"><i class="bi bi-clock"></i>{{ pedido.fecha_creacion|date:"H:i" }} | {{ pedido.get_modalidad_entrega_display }}</p>
+                        <ul class="pedido-productos">
+                        {% for detalle in pedido.detalle.all %}
+                            <li>{{ detalle.cantidad }} X {{ detalle.nombre_producto }} {% if detalle.personalizacion %} ({{ detalle.personalizacion }}) {% endif %}</li>
+                            {% empty %}
+                            <li>Sin productos registrados</li>
+                        {% endfor %}
+                        </ul>
+                        <p class="pedido-total">{{ pedido.total }}</p>
+                            <div class="acciones-pedido">
+                                
+                                <form method="POST" action="{% url 'cambiar_estado' pedido.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="estado" value="LIST">
+                                    <button type="submit" class="boton-estado"><i class="bi bi-check-circle"></i> Marcar como listo</button>
+                                </form>
+                                <button type="button" class="boton-cancelar" data-bs-toggle="modal" data-bs-target="#modalCancelar" data-pedido="{{ pedido.id }}"><i class="bi bi-x-circle"></i> Cancelar pedido</button>
+                            </div>
+                    </article>
+                    {% empty %}
+                    <p>No hay pedidos en preparación</p>
+                    {% endfor %}
+                </section>
+            </div>
+            
+            <div class="col-12 col-md-6 col-xl-3">
+                <section class="columna columna-listo" aria-label="Pedidos en listos">
+                    <h2 class="columna-titulo">Listo <span class="contador-columna-listo">{{ pedidos_listos|length }}</span></h2>
+                    
+                    {% for pedido in pedidos_listos %}
+                    <article class="tarjeta-pedido">
+                        <div class="pedido-cabecera">
+                            <span class="pedido-folio">#{{ pedido.folio }}</span>
+                            <span class="etiqueta-canal canal-web">{{ pedido.get_origen_display }}</span>
+                        </div>
+                        <p class="pedido-cliente">{{ pedido.cliente.nombre }}.</p>
+                        <p class="pedido-detalle"><i class="bi bi-clock"></i> {{ pedido.fecha_creacion|date:"H:i" }} | {{ pedido.get_modalidad_entrega_display }}</p>
+                        <ul class="pedido-productos">
+                            {% for detalle in pedido.detalle.all %}
+                            <li>{{ detalle.cantidad }} X {{ detalle.nombre_producto }}{% if detalle.personalizacion %} ({{ detalle.personalizacion }}) {% endif %}</li>
+                            {% empty %}
+                            <li>Sin productos registrados</li>
+                            {% endfor %}
+                        </ul>
+                        <p class="pedido-total">${{ pedido.total }}</p>
+                            <div class="acciones-pedido">
+                                
+                                {% if pedido.modalidad_entrega == 'DESP' %}
+                                <form method="POST" action="{% url 'cambiar_estado' pedido.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="estado" value="ECAM">
+                                    <button type="submit" class="boton-estado"><i class="bi bi-truck"></i> Marcar en camino</button>
+                                </form>
+                                {% else %}
+                                <form method="POST" action="{% url 'cambiar_estado' pedido.id %}">
+                                {% csrf_token %}
+                                    <input type="hidden" name="estado" value="ENTR">
+                                    <button type="submit" class="boton-estado"><i class="bi bi-check"></i> Marcar en entregado</button>
+                                </form>
+                                {% endif %}
+                                <button type="button" class="boton-cancelar" data-bs-toggle="modal" data-bs-target="#modalCancelar" data-pedido="{{ pedido.id }} "><i class="bi bi-x-circle"></i> Cancelar pedido</button>
+                            </div>
+                    </article>
+                    {% empty %}
+                    <p>No hay pedidos listos.</p>
+                    {% endfor %}
+                </section>
+            </div>
+
+            
+            <div class="col-12 col-md-6 col-xl-3">
+                <section class="columna columna-camino" aria-label="Pedidos en camino">
+                    <h2 class="columna-titulo">En camino <span class="contador-columna-camino">{{ pedidos_camino|length }}</span></h2>
+                    {%for pedido in pedidos_camino %}
+                    <article class="tarjeta-pedido">
+                        <div class="pedido-cabecera">
+                            <span class="pedido-folio">#{{ pedido.folio }}</span>
+                            <span class="etiqueta-canal canal-whatsapp">{{ pedido.get_origen_display }}</span>
+                        </div>
+                        <p class="pedido-cliente">{{ pedido.cliente.nombre }}</p>
+                        <p class="pedido-detalle"><i class="bi bi-clock"></i> {{ pedido.fecha_creacion|date:"H:i" }} | Despacho a domicilio</p>
+                        <ul class="pedido-productos">
+                            {% for detalle in pedido.detalle.all %}
+                            <li>{{ detalle.cantidad }} X {{ detalle.nombre_producto }}{% if detalle.personalizacion %} ({{ detalle.personalizacion }}){% endif %}</li>
+                            {% empty %}
+                            <li>Sin productos registrados</li>
+                            {% endfor %}
+                        </ul>
+                        <p class="pedido-total">${{ pedido.total }}</p>
+                            <div class="acciones-pedido">
+                                <form method="POST" action="{% url 'cambiar_estado' pedido.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="estado" value="ENTR">
+                                    <button type="submit" class="boton-estado"><i class="bi bi-bag-check"></i> Marcar como entregado</button>
+                                </form>
+                                    <button type="button" class="boton-cancelar" data-bs-toggle="modal" data-bs-target="#modalCancelar" data-pedido="{{ pedido.id }}"><i class="bi bi-x-circle"></i> Cancelar pedido</button>
+                            </div>
+                    </article>
+                    {% empty %}
+                    <p>No hay pedidos en camino</p>
+                    {% endfor %}
+                </section>
+            </div>
+        </div>
+
+    
+    <div class="modal fade" id="modalCancelar" tabindex="-1" aria-labelledby="tituloCancelar" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content ventana">
+
+                <div class="modal-header">
+                    <h2 class="ventana-titulo" id="tituloCancelar">Cancelar pedido</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+
+                <form method="POST" action="{% url 'cambiar_estado' 0 %}" id="formCancelar">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <label for="motivo" class="etiqueta-campo">Motivo de la cancelación</label>
+                    <select class="campo" id="motivo">
+                        <option value="" selected disabled>Selecciona un motivo</option>
+                        <option value="El cliente se arrepintió">El cliente se arrepintió</option>
+                        <option value="Producto sin stock">Producto sin stock</option>
+                        <option value="Pago no confirmado">Pago no confirmado</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                    <label for="detalle" class="etiqueta-campo">Detalle (opcional)</label>
+                    <textarea class="campo" id="detalle" name="detalle" rows="3"></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="boton-secundario" data-bs-dismiss="modal">Volver</button>
+                    <button type="submit" class="boton-peligro" data-bs-dismiss="modal">Confirmar cancelación</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+    const modalCancelar = document.getElementById('modalCancelar')
+    modalCancelar.addEventListener('show.bs.modal', function (event) {
+        const boton = event.relatedTarget;
+        const pedidoId = boton.getAttribute('data-pedido');
+
+        const formulario = document.getElementById('formCancelar');
+        formulario.action = "{% url 'cambiar_estado' 0 %}".replace('/0/', '/' + pedidoId + '/');
+
+        let estado = formulario.querySelector('input[name="estado"]');
+
+        if (!estado) {
+            estado = document.createElement('input')
+            estado.type = 'hidden'
+            estado.name = 'estado'
+            formulario.appendChild(estado)
+        }
+
+        estado.value = 'CANC';
+    });
+</script>
+
+</body>
+{% endblock content %}
