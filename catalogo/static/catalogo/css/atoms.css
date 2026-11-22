@@ -224,3 +224,122 @@ footer a:hover { color: var(--amarillo) !important; }
 @media (max-width: 36rem) {
     .marca img { height: 3rem; }
 }
+
+/* ---------- 14. Comportamiento de scroll ---------- */
+html { scroll-behavior: smooth; }
+#nosotros, #ubicacion, #menu { scroll-margin-top: 5rem; }
+
+/* ---------- Sección "Arma tu pedido" (nosotros) ---------- */
+.seccion-oscura {
+    background: #143D29;
+    color: var(--crema);
+    padding: 6rem 0;
+    border-top: 0.375rem solid var(--verde-oscuro);
+    border-bottom: 0.375rem solid var(--amarillo);
+}
+
+.seccion-oscura .titulo-oscuro {
+    font-family: var(--fuente-titulo);
+    font-weight: 800;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    line-height: 0.95;
+    text-transform: uppercase;
+    color: #fff;
+    margin: 0;
+}
+
+.seccion-oscura .titulo-oscuro .acento { color: var(--amarillo); }
+
+.seccion-oscura .texto-oscuro {
+    color: var(--verde-claro);
+    max-width: 32rem;
+}
+
+.pasos {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 0.0625rem solid rgba(255, 249, 238, 0.25);
+}
+
+.pasos li {
+    display: flex;
+    gap: 2rem;
+    padding: 1.5rem 0;
+    border-bottom: 0.0625rem solid rgba(255, 249, 238, 0.25);
+}
+
+.pasos .paso-numero {
+    font-family: var(--fuente-titulo);
+    font-weight: 800;
+    font-size: 1.75rem;
+    line-height: 1.2;
+    color: var(--naranja);
+    min-width: 3rem;
+}
+
+.pasos .paso-titulo {
+    font-family: var(--fuente-texto);
+    font-size: 1.15rem;
+    font-weight: 800;
+    text-transform: none;
+    color: #fff;
+    margin: 0 0 0.25rem;
+}
+
+.pasos .paso-texto {
+    color: var(--verde-claro);
+    margin: 0;
+}
+
+@media (max-width: 575px) {
+    .seccion-oscura { padding: 4rem 0; }
+    .pasos li { gap: 1rem; }
+}
+
+/* ---------- Tarjeta del mapa con pie ---------- */
+.mapa-tarjeta {
+    background: var(--crema);
+    border: 0.1875rem solid var(--verde-oscuro);
+    border-radius: var(--radio);
+    box-shadow: var(--sombra);
+    overflow: hidden;
+}
+
+.mapa-pie {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.875rem 1.25rem;
+    border-radius: 0 0 1.5rem 1.5rem;
+    background: var(--verde);  
+    border-top: 0.375rem solid var(--amarillo);
+}
+
+.mapa-pie i {
+    font-size: 1.5rem;
+    color: var(--amarillo);
+}
+
+.mapa-pie strong {
+    display: block;
+    font-family: var(--fuente-titulo);
+    font-size: 1.25rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 1.1;
+    color: #fff;
+}
+
+.mapa-pie span {
+    color: var(--verde-claro);
+    font-size: 0.9rem;
+}
+
+/* ---------- Sección ubicación ---------- */
+.ubicacion-titulo {
+    font-size: clamp(3rem, 6vw, 4.75rem);
+    line-height: 0.95;
+    color: var(--verde);
+    margin-bottom: 1.75rem;
+}
