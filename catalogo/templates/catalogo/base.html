@@ -42,9 +42,9 @@
             <div class="collapse navbar-collapse" id="menuPrincipal">
                 <!-- Enlaces públicos -->
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0 fw-bold text-uppercase">
-                    <li class="nav-item"><a class="nav-link text-dark" href="/#menu"><i class="bi bi-grid me-1"></i> Menú</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark" href="#"><i class="bi bi-heart me-1"></i> Nosotros</a></li>
-                    <li class="nav-item"><a class="nav-link text-dark" href="#"><i class="bi bi-geo-alt me-1"></i> Ubicación</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark" href="{% url 'lista' %}#menu"><i class="bi bi-grid me-1"></i> Menú</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark" href="{% url 'lista' %}#nosotros"><i class="bi bi-heart me-1"></i> Nosotros</a></li>
+                    <li class="nav-item"><a class="nav-link text-dark" href="{% url 'lista' %}#ubicacion"><i class="bi bi-geo-alt me-1"></i> Ubicación</a></li>
 
                     {% if user.is_authenticated and user.rol == 'DUENO' %}
                     <!-- Enlaces privados de gestión (solo Dueño) -->
@@ -65,7 +65,6 @@
                             <i class="bi bi-people me-1"></i> Personal</a>
                     </li>
                     {% endif %}
-</ul>
                 </ul>
 
                 <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
@@ -84,7 +83,7 @@
                                 <i class="bi bi-person-circle"></i> {{ user.get_username }}
                             </li>
                             <li>
-                                <form method="post" action="/usuarios/logout/">
+                                <form method="post" action="{% url 'logout' %}">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-outline-secondary btn-sm">
                                         <i class="bi bi-box-arrow-right me-1"></i> Cerrar sesión
@@ -94,7 +93,7 @@
                         </ul>
                     </div>
                     {% else %}
-                    <a href="/usuarios/login/" class="btn btn-outline-secondary btn-sm">
+                    <a href="{% url 'login' %}" class="btn btn-outline-secondary btn-sm">
                         <i class="bi bi-person-circle me-1"></i> Iniciar sesión
                     </a>
                     {% endif %}
@@ -149,7 +148,7 @@
             <div class="row g-4">
 
                 <div class="col-lg-4">
-                    <a class="marca mb-3 d-inline-block" href="/catalogo/">
+                    <a class="marca mb-3 d-inline-block" href="#">
                         <img src="{% static 'catalogo/img/atom.png' %}" alt="Sandwichs Atom's" style="height: 50px;">
                     </a>
                     <p class="small text-light">Tu sanguchería favorita. Preparaciones artesanales con ingredientes de primera calidad para retiro en local o despacho a domicilio.</p>
@@ -163,11 +162,11 @@
                 <div class="col-6 col-lg-2">
                     <h4 class="h6 text-uppercase fw-bold text-warning">Menú</h4>
                     <ul class="list-unstyled small">
-                        <li class="mb-2"><a href="/catalogo/#menu" class="text-decoration-none text-light">Catálogo</a></li>
-                        <li class="mb-2"><a href="/catalogo/#nosotros" class="text-decoration-none text-light">Nosotros</a></li>
-                        <li class="mb-2"><a href="/catalogo/#ubicacion" class="text-decoration-none text-light">Ubicación</a></li>
+                        <li class="mb-2"><a href="{% url 'lista' %}#menu" class="text-decoration-none text-light">Catálogo</a></li>
+                        <li class="mb-2"><a href="{% url 'lista' %}#nosotros" class="text-decoration-none text-light">Nosotros</a></li>
+                        <li class="mb-2"><a href="{% url 'lista' %}#ubicacion" class="text-decoration-none text-light">Ubicación</a></li>
                         {% if not user.is_authenticated %}
-                        <li class="mb-2"><a href="/usuarios/login/" class="text-decoration-none text-light">Iniciar sesión</a></li>
+                        <li class="mb-2"><a href="{% url 'login' %}" class="text-decoration-none text-light">Iniciar sesión</a></li>
                         {% endif %}
                     </ul>
                 </div>
@@ -175,7 +174,7 @@
                 <div class="col-6 col-lg-3">
                     <h4 class="h6 text-uppercase fw-bold text-warning">Horarios</h4>
                     <ul class="list-unstyled small text-light">
-                        <li class="mb-1"><i class="bi bi-clock me-1"></i> <strong>Mar–Dom:</strong> 18:30 – 1:30</li>
+                        <li class="mb-1"><i class="bi bi-clock me-1"></i> <strong>Mar–Dom:</strong> 18:30 – 1:00</li>
                         <li class="mb-1"><i class="bi bi-clock me-1"></i> <strong>Lun:</strong> Cerrado</li>
                     </ul>
                 </div>
