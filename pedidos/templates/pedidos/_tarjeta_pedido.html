@@ -1,0 +1,37 @@
+{% load formato %}
+{# Tarjeta de un pedido en el tablero. Recibe: pedido, estado (siguiente estado), texto e icono del botón #}
+<article class="tarjeta-pedido" data-origen="{{ pedido.origen }}" data-hora="{{ pedido.fecha_creacion|date:'U' }}">
+    <div class="pedido-cabecera">
+        <span class="pedido-folio">{{ pedido.folio }}</span>
+        <span class="etiqueta-canal {% if pedido.origen == 'WEB' %}canal-web{% elif pedido.origen == 'WHAT' %}canal-whatsapp{% else %}canal-meson{% endif %}">
+            {{ pedido.get_origen_display }}
+        </span>
+    </div>
+    <p class="pedido-cliente">{{ pedido.cliente.nombre }}</p>
+    <p class="pedido-detalle">
+        <i class="bi bi-clock"></i> {{ pedido.fecha_creacion|date:"H:i" }} · {{ pedido.get_modalidad_entrega_display }}
+    </p>
+    <ul class="pedido-productos">
+        {% for detalle in pedido.detalle.all %}
+        <li>{{ detalle.cantidad }} × {{ detalle.nombre_producto }}{% if detalle.personalizacion %} <span class="text-secondary">({{ detalle.personalizacion }})</span>{% endif %}</li>
+        {% empty %}
+        <li>Sin productos registrados</li>
+        {% endfor %}
+    </ul>
+    {% if pedido.observaciones %}
+    <p class="pedido-nota"><i class="bi bi-chat-left-text"></i> {{ pedido.observaciones }}</p>
+    {% endif %}
+    <p class="pedido-total">{{ pedido.total|pesos }}</p>
+
+    <div class="acciones-pedido">
+        <form method="POST" action="{% url 'cambiar_estado' pedido.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="estado" value="{{ estado }}">
+            <button type="submit" class="boton-estado"><i class="bi {{ icono }}"></i> {{ texto }}</button>
+        </form>
+        <button type="button" class="boton-cancelar" data-bs-toggle="modal" data-bs-target="#modalCancelar"
+                data-pedido="{{ pedido.id }}" data-folio="{{ pedido.folio }}">
+            <i class="bi bi-x-circle"></i> Cancelar pedido
+        </button>
+    </div>
+</article>

@@ -1,0 +1,19 @@
+{# Barra de pasos de la compra. Uso: {% include 'pedidos/_pasos_compra.html' with paso=2 %} #}
+<ol class="pasos-compra" aria-label="Pasos de la compra">
+    <li class="{% if paso > 1 %}hecho{% elif paso == 1 %}actual{% endif %}">
+        <span class="paso-circulo">{% if paso > 1 %}<i class="bi bi-check-lg"></i>{% else %}1{% endif %}</span>
+        <span class="paso-nombre">Carrito</span>
+    </li>
+    <li class="{% if paso > 2 %}hecho{% elif paso == 2 %}actual{% endif %}" {% if paso == 2 %}aria-current="step"{% endif %}>
+        <span class="paso-circulo">{% if paso > 2 %}<i class="bi bi-check-lg"></i>{% else %}2{% endif %}</span>
+        <span class="paso-nombre">Entrega</span>
+    </li>
+    <li class="{% if paso > 3 %}hecho{% elif paso == 3 %}actual{% endif %}" {% if paso == 3 %}aria-current="step"{% endif %}>
+        <span class="paso-circulo">{% if paso > 3 %}<i class="bi bi-check-lg"></i>{% else %}3{% endif %}</span>
+        <span class="paso-nombre">Pago</span>
+    </li>
+    <li class="{% if paso > 4 %}hecho{% elif paso == 4 %}actual{% endif %}" {% if paso == 4 %}aria-current="step"{% endif %}>
+        <span class="paso-circulo">{% if paso > 4 %}<i class="bi bi-check-lg"></i>{% else %}4{% endif %}</span>
+        <span class="paso-nombre">Confirmación</span>
+    </li>
+</ol>

@@ -1,63 +1,49 @@
-body {
-    background-color: #f5f6f8;
-    color: #212529;
+/* Pago y comprobante (lo común está en checkout.css) */
+
+/* Datos de la cuenta y número de operación: solo con "Transferencia" */
+.bloque-transferencia {
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    border-left: 0.25rem solid var(--naranja);
+    background: var(--crema);
+    border-radius: 0 0.625rem 0.625rem 0;
 }
-.navbar-brand {
-    letter-spacing: 2px;
+
+/* Comprobante con borde punteado */
+.comprobante {
+    border: 0.125rem dashed var(--verde);
+    border-radius: var(--radio);
+    padding: 1.25rem 1.5rem;
 }
-.panel {
-    background-color: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    padding: 1.35rem;
-    box-shadow: 0 4px 18px rgba(23, 32, 51, 0.04);
-}
-.opcion-pago {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.7rem;
-    border: 1px solid #dee2e6;
-    border-radius: 10px;
-    padding: 1rem;
+
+.comprobante-marca {
+    text-align: center;
+    font-family: var(--fuente-titulo);
+    font-weight: 800;
+    font-size: 1.6rem;
+    text-transform: uppercase;
+    color: var(--naranja-oscuro);
     margin-bottom: 0.75rem;
 }
-.opcion-pago label {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    cursor: pointer;
-    flex: 1;
+
+.comprobante p { margin-bottom: 0.5rem; }
+
+/* Estado del pago como etiqueta de color */
+.estado-pago {
+    display: inline-block;
+    padding: 0.1rem 0.6rem;
+    border-radius: 999rem;
+    font-size: 0.85rem;
+    font-weight: 800;
+    background: #FFF3CC;
+    color: #5C3B00;
 }
-.opcion-pago label i {
-    color: #0d6efd;
-    font-size: 1.5rem;
-}
-.opcion-pago label span {
-    display: flex;
-    flex-direction: column;
-}
-.opcion-pago small {
-    color: #6c757d;
-}
-.linea-resumen, .total-resumen {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.8rem 0;
-    border-bottom: 1px solid #e9ecef;
-}
-.total-resumen {
-    border-bottom: 0;
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-top: 0.5rem;
-}
-.comprobante {
-    background: #f8f9fa;
-    border: 1px dashed #adb5bd;
-    border-radius: 10px;
-    padding: 1rem;
-}
-.comprobante p {
-    margin-bottom: 0.55rem;
+.estado-pago.pagado { background: var(--verde-claro); color: var(--verde-oscuro); }
+.estado-pago.rechazado { background: var(--peligro-fondo); color: var(--peligro); }
+
+/* Al imprimir solo se ve el comprobante */
+@media print {
+    body * { visibility: hidden; }
+    .comprobante, .comprobante * { visibility: visible; }
+    .comprobante { position: absolute; top: 0; left: 0; width: 100%; }
 }

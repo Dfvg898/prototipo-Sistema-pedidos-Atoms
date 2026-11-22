@@ -1,0 +1,67 @@
+{% extends 'catalogo/base.html' %}
+{% block content %}
+<section class="container py-4">
+    <h1 class="mb-3">Tu carrito</h1>
+
+    {% if items %}
+    <div class="table-responsive">
+    <table class="table align-middle text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td class="text-start">
+                    {{ item.nombre_producto }}
+                    {% if item.personalizacion %}<small class="d-block text-secondary">{{ item.personalizacion }}</small>{% endif %}
+                </td>
+                <td>${{ item.precio_unitario }}</td>
+                <td>
+                    <div class="d-flex justify-content-center align-items-center gap-2">
+                        {# Botón para disminuir: si la cantidad es 1, quita el producto #}
+                        <form method="post" action="{% url 'disminuir_item' forloop.counter0 %}" class="m-0">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-secondary btn-sm" aria-label="Quitar una unidad"><i class="bi bi-dash"></i></button>
+                        </form>
+
+                        <span class="px-2 fw-bold">{{ item.cantidad }}</span>
+
+                        {# Botón para aumentar: se deshabilita al llegar al máximo por línea #}
+                        <form method="post" action="{% url 'incrementar_item' forloop.counter0 %}" class="m-0">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-secondary btn-sm" aria-label="Agregar una unidad"
+                                    {% if item.cantidad >= maximo_por_linea %}disabled{% endif %}><i class="bi bi-plus"></i></button>
+                        </form>
+                    </div>
+                </td>
+                <td>${{ item.subtotal }}</td>
+                <td>
+                    <form method="post" action="{% url 'eliminar_item' forloop.counter0 %}" class="m-0">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i> Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <h4 class="mb-0"><strong>Total:</strong> ${{ total }}</h4>
+        <a href="{% url 'datos_entrega' %}" class="btn btn-primary">Continuar a datos de entrega</a>
+    </div>
+    {% else %}
+    <p>No hay productos en el carrito.</p>
+    {% endif %}
+
+    <a class="btn btn-outline-secondary mt-3" href="{% url 'lista' %}">Volver al catálogo</a>
+</section>
+{% endblock %}

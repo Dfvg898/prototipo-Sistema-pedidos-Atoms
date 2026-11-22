@@ -1,92 +1,155 @@
 {% extends "catalogo/base.html" %}
-{% load static %}
+{% load static formato %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/checkout.css' %}">
+<link rel="stylesheet" href="{% static 'css/pagos.css' %}">
+{% endblock %}
+
 {% block content %}
-<body>
-    <nav class="navbar navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="pagos.html">ATOMS</a>
-            <span class="navbar-text">Gestor de pagos y comprobantes</span>
-        </div>
-    </nav>
+<section class="container py-5">
 
-    <main class="container py-4">
-        <header class="mb-4">
-            <h1 class="h3">Confirmación del pedido</h1>
-            <p class="text-secondary">Selecciona un medio de pago y revisa el resumen de tu compra.</p>
-        </header>
+    {% if pago %}
+    {% include 'pedidos/_pasos_compra.html' with paso=4 %}
+    {% else %}
+    {% include 'pedidos/_pasos_compra.html' with paso=3 %}
+    {% endif %}
 
-        <div class="row g-4">
-            <section class="col-lg-7">
-                <div class="panel">
-                    <h2 class="h5 mb-3">Medio de pago</h2>
-                    <form method="POST" action="{% url 'seleccionar_pago' pedido.id %}">
+    <header class="mb-4">
+        <h1 class="titulo-pagina">Confirmación del pedido</h1>
+        <p class="text-secondary mb-0">Elige un medio de pago y revisa el resumen de tu compra.</p>
+    </header>
+
+    <div class="row g-4">
+        <!-- Medio de pago -->
+        <div class="col-lg-7">
+            <div class="panel">
+                <h2>Medio de pago</h2>
+
+                {% if pago and pago.estado == 'PAGA' %}
+                <p class="mb-0"><i class="bi bi-check-circle-fill text-success me-1"></i> Este pedido ya tiene su pago confirmado.</p>
+                {% else %}
+                <form method="POST" action="{% url 'seleccionar_pago' pedido.id %}">
                     {% csrf_token %}
-                        <div class="opcion-pago">
-                            <input class="form-check-input" type="radio" name="medio_pago" id="efectivo" value="EFEC" checked required>
-                            <label for="efectivo"><i class="bi bi-cash-coin"></i><span><strong>Efectivo</strong><small>Pago al retirar o recibir el pedido.</small></span></label>
-                        </div>
-                        <div class="opcion-pago">
-                            <input class="form-check-input" type="radio" name="medio_pago" id="transferencia" value="TRAN">
-                            <label for="transferencia"><i class="bi bi-bank"></i><span><strong>Transferencia bancaria</strong><small>El pago debe ser verificado por el personal.</small></span></label>
-                        </div>
-                        <div class="opcion-pago">
-                            <input class="form-check-input" type="radio" name="medio_pago" id="tarjeta" value="TARJ">
-                            <label for="tarjeta"><i class="bi bi-credit-card"></i><span><strong>Tarjeta</strong><small>Opción de pago ilustrativa.</small></span></label>
-                        </div>
 
-                        <div class="alert alert-info mt-3">
-                            <strong>Datos para transferencia</strong>
-                            <p class="mb-0 mt-1">Banco: Banco de ejemplo<br>Cuenta: 123456789<br>Titular: ATOMS</p>
-                        </div>
-
-                        <div class="mt-3">
-                            <label for="referenciaTransferencia" class="form-label">
-                                Número de operación o referencia de transferencia
-                            </label>
-                            <input type="text"
-                                class="form-control"
-                                id="referenciaTransferencia"
-                                name="referencia_transferencia"
-                                maxlength="100"
-                                placeholder="Ingresa el número de operación">
-                        </div>
-
-                        <div class="mt-4">
-                            <label for="nombreCliente" class="form-label">Nombre del cliente</label>
-                            <input type="text" class="form-control" id="nombreCliente" placeholder="Escribe tu nombre">
-                        </div>
-                        <div class="mt-3">
-                            <label for="observacionPago" class="form-label">Observaciones (opcional)</label>
-                            <textarea class="form-control" id="observacionPago" rows="3" placeholder="Escribe alguna observación"></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary mt-4">Confirmar pedido</button>
-                    </form>
-                </div>
-            </section>
-
-            <aside class="col-lg-5">
-                <div class="panel">
-                    <h2 class="h5">Resumen del pedido</h2>
-                    <div class="linea-resumen"><span>1 × Completo italiano</span><span>$2.800</span></div>
-                    <div class="linea-resumen"><span>Queso extra</span><span>$500</span></div>
-                    <div class="linea-resumen"><span>Despacho a domicilio</span><span>$2.000</span></div>
-                    <div class="total-resumen"><span>Total</span><span>$5.300</span></div>
-                </div>
-
-                <div class="panel mt-3">
-                    <h2 class="h5"><i class="bi bi-receipt me-2"></i>Comprobante de pago</h2>
-                    <p class="text-secondary">Vista de ejemplo del comprobante asociado al pedido.</p>
-                    <div class="comprobante">
-                        <p><strong>Folio:</strong> AT-000123</p>
-                        <p><strong>Cliente:</strong> Nombre del cliente</p>
-                        <p><strong>Medio de pago:</strong> Efectivo</p>
-                        <p><strong>Estado:</strong> Pendiente de confirmación</p>
-                        <p class="mb-0"><strong>Total:</strong> $5.300</p>
+                    <div class="opcion-tarjeta">
+                        <input class="form-check-input" type="radio" name="medio_pago" id="efectivo" value="EFEC" required
+                               {% if not pago or pago.medio_pago == 'EFEC' %}checked{% endif %}>
+                        <i class="bi bi-cash-coin" aria-hidden="true"></i>
+                        <label for="efectivo">
+                            <strong>Efectivo</strong>
+                            <small>Pago al retirar o recibir el pedido.</small>
+                        </label>
                     </div>
-                    <button type="button" class="btn btn-outline-secondary mt-3"><i class="bi bi-printer me-1"></i>Imprimir comprobante</button>
-                </div>
-            </aside>
+                    <div class="opcion-tarjeta">
+                        <input class="form-check-input" type="radio" name="medio_pago" id="transferencia" value="TRAN"
+                               {% if pago.medio_pago == 'TRAN' %}checked{% endif %}>
+                        <i class="bi bi-bank" aria-hidden="true"></i>
+                        <label for="transferencia">
+                            <strong>Transferencia bancaria</strong>
+                            <small>El pago debe ser verificado por el personal.</small>
+                        </label>
+                    </div>
+                    <div class="opcion-tarjeta">
+                        <input class="form-check-input" type="radio" name="medio_pago" id="tarjeta" value="TARJ"
+                               {% if pago.medio_pago == 'TARJ' %}checked{% endif %}>
+                        <i class="bi bi-credit-card" aria-hidden="true"></i>
+                        <label for="tarjeta">
+                            <strong>Tarjeta</strong>
+                            <small>Opción de pago ilustrativa.</small>
+                        </label>
+                    </div>
+
+                    <!-- Solo se muestra con "Transferencia bancaria" -->
+                    <div id="bloque-transferencia" class="bloque-transferencia {% if pago.medio_pago != 'TRAN' %}d-none{% endif %}">
+                        <p class="fw-bold mb-1">Datos para transferencia</p>
+                        <p class="mb-3">Banco: Banco de ejemplo · Cuenta: 123456789 · Titular: ATOMS</p>
+                        <label for="referenciaTransferencia" class="form-label">Número de operación</label>
+                        <input type="text" class="form-control" id="referenciaTransferencia" name="referencia_transferencia"
+                               maxlength="100" placeholder="Ingresa el número de operación"
+                               value="{{ pago.referencia_transferencia|default:'' }}">
+                    </div>
+
+                    <div class="d-flex flex-wrap justify-content-between gap-2 mt-4">
+                        <a href="{% url 'lista' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Volver al catálogo
+                        </a>
+                        <button type="submit" class="btn btn-primary btn-continuar">
+                            Confirmar pedido <i class="bi bi-check2 ms-1"></i>
+                        </button>
+                    </div>
+                </form>
+                {% endif %}
+            </div>
         </div>
-    </main>
-</body>
-{% endblock content %}
+
+        <!-- Resumen y comprobante -->
+        <aside class="col-lg-5">
+            <div class="panel">
+                <h2>Resumen del pedido</h2>
+                {% for detalle in pedido.detalle.all %}
+                <div class="linea-resumen">
+                    <span>
+                        {{ detalle.cantidad }} × {{ detalle.nombre_producto }}
+                        {% if detalle.personalizacion %}<small>{{ detalle.personalizacion }}</small>{% endif %}
+                    </span>
+                    <span class="precio">{{ detalle.subtotal|pesos }}</span>
+                </div>
+                {% endfor %}
+                {% if pedido.modalidad_entrega == 'DESP' %}
+                <div class="linea-resumen">
+                    <span>Despacho a domicilio</span>
+                    <span class="precio">{{ pedido.costo_despacho|pesos }}</span>
+                </div>
+                {% else %}
+                <div class="linea-resumen">
+                    <span>Retiro en local</span>
+                    <span class="precio">$0</span>
+                </div>
+                {% endif %}
+                <div class="total-banda">
+                    <span>Total</span>
+                    <span>{{ pedido.total|pesos }}</span>
+                </div>
+            </div>
+
+            <div class="panel mt-4">
+                <h2><i class="bi bi-receipt me-2"></i>Comprobante de pago</h2>
+                {% if pago %}
+                <div class="comprobante">
+                    <div class="comprobante-marca">Sandwichs Atom's</div>
+                    <p><strong>Folio:</strong> {{ pedido.folio }}</p>
+                    <p><strong>Cliente:</strong> {{ pedido.cliente.nombre }}</p>
+                    <p><strong>Fecha:</strong> {{ pedido.fecha_creacion|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Medio de pago:</strong> {{ pago.get_medio_pago_display }}</p>
+                    <p><strong>Estado:</strong>
+                        <span class="estado-pago {% if pago.estado == 'PAGA' %}pagado{% elif pago.estado == 'RECH' %}rechazado{% endif %}">{{ pago.get_estado_display }}</span>
+                    </p>
+                    <p class="mb-0"><strong>Total:</strong> {{ pago.monto|pesos }}</p>
+                </div>
+                <button type="button" class="btn btn-outline-secondary mt-3" onclick="window.print()">
+                    <i class="bi bi-printer me-1"></i> Imprimir comprobante
+                </button>
+                {% else %}
+                <p class="text-secondary mb-0">El comprobante aparecerá aquí cuando confirmes el medio de pago.</p>
+                {% endif %}
+            </div>
+        </aside>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Muestra los datos de transferencia solo cuando se elige "Transferencia bancaria"
+    (function () {
+        const bloque = document.getElementById("bloque-transferencia");
+        if (!bloque) return;
+        document.querySelectorAll('input[name="medio_pago"]').forEach(function (radio) {
+            radio.addEventListener("change", function () {
+                bloque.classList.toggle("d-none", radio.value !== "TRAN" || !radio.checked);
+            });
+        });
+    })();
+</script>
+{% endblock %}

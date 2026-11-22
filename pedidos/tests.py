@@ -138,3 +138,34 @@ class DespachoRayoTests(TestCase):
         self.assertEqual(self.client.post(url, {'repartidor_id': self.perfil.pk}).status_code, 403)
         self.client.force_login(self.sin_perfil)
         self.assertNotContains(self.client.get(reverse('lista_delivery')), propio.folio)
+
+
+class CarritoBotonesTests(TestCase):
+    def setUp(self):
+        categoria = Categoria.objects.create(nombre="Bebidas")
+        self.producto = Producto.objects.create(
+            nombre="Jugo", descripcion="Prueba", precio_base=1000, categoria=categoria,
+        )
+        self.client.post(reverse("agregar_carrito", args=[self.producto.pk]))
+
+    def test_mas_menos_y_eliminar(self):
+        self.client.post(reverse("incrementar_item", args=[0]))
+        self.assertEqual(self.client.session["carrito"][0]["cantidad"], 2)
+        self.assertEqual(self.client.session["carrito"][0]["subtotal"], 2000)
+        self.assertEqual(self.client.session["cantidad_carrito"], 2)
+        self.client.post(reverse("disminuir_item", args=[0]))
+        self.assertEqual(self.client.session["carrito"][0]["cantidad"], 1)
+        respuesta = self.client.get(reverse("ver_carrito"))
+        self.assertContains(respuesta, "Jugo")
+        self.assertContains(respuesta, reverse("eliminar_item", args=[0]))
+        self.assertRedirects(self.client.post(reverse("eliminar_item", args=[0])), reverse("ver_carrito"))
+        self.assertEqual(self.client.session["carrito"], [])
+        # Un índice que no existe no rompe nada
+        self.assertEqual(self.client.post(reverse("eliminar_item", args=[5])).status_code, 302)
+
+    def test_panel_lateral_muestra_el_carrito_y_next_vuelve_al_catalogo(self):
+        respuesta = self.client.post(reverse("incrementar_item", args=[0]), {"next": "/?categoria=1"})
+        self.assertEqual(respuesta["Location"], "/?categoria=1")
+        catalogo = self.client.get(reverse("lista"))
+        self.assertContains(catalogo, "$2000")
+        self.assertContains(catalogo, reverse("disminuir_item", args=[0]))

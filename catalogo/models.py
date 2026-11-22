@@ -23,6 +23,7 @@ class Producto(models.Model):
         on_delete=models.PROTECT,  # no se borra una categoría que tiene productos
         related_name='productos',
     )
+    stock = models.PositiveIntegerField(default=0, help_text='Unidades disponibles')
     activo = models.BooleanField(default=True)
     destacado = models.BooleanField(default=False, help_text='Muestra la etiqueta "Más pedido"')
  

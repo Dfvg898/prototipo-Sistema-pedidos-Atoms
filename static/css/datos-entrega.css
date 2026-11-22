@@ -1,46 +1,21 @@
-body {
-    background-color: #f5f6f8;
-    color: #212529;
+/* Datos del cliente y entrega (lo común está en checkout.css) */
+
+/* Bloque de dirección: aparece solo con "Despacho a domicilio" */
+#bloque-despacho {
+    padding: 1rem 1.25rem 0.25rem;
+    margin-bottom: 1rem;
+    border-left: 0.25rem solid var(--naranja);
+    background: var(--crema);
+    border-radius: 0 0.625rem 0.625rem 0;
 }
-.navbar-brand {
-    letter-spacing: 2px;
-}
-.panel {
-    background-color: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 14px;
-    padding: 1.35rem;
-    box-shadow: 0 4px 18px rgba(23, 32, 51, 0.04);
-}
-.opcion-entrega {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-    border: 1px solid #dee2e6;
-    border-radius: 10px;
+
+/* Tarjeta verde con los datos ya guardados */
+.datos-guardados {
+    margin-top: 1.25rem;
     padding: 1rem;
-    margin-bottom: 0.75rem;
-}
-.opcion-entrega label {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    cursor: pointer;
-}
-.opcion-entrega label span {
-    color: #6c757d;
-    font-size: 0.9rem;
-}
-.linea-resumen, .total-resumen {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.8rem 0;
-    border-bottom: 1px solid #e9ecef;
-}
-.total-resumen {
-    border-bottom: 0;
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-top: 0.5rem;
+    border-radius: 0.625rem;
+    background: var(--verde-claro);
+    border-left: 0.3125rem solid var(--verde);
+    color: var(--verde-oscuro);
+    font-size: 0.95rem;
 }

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.views.decorators.http import require_POST
 from .models import AsignacionDespacho, Cliente, DetallePedido, Pedido, Pago
 from usuarios.decorators import rol_requerido
@@ -9,6 +9,7 @@ from usuarios.models import AvisoWhatsApp, Usuario, Repartidor
 from usuarios.notificaciones import registrar_aviso_whatsapp
 from catalogo.models import Producto, OpcionPersonalizacion
 from django.db import transaction
+from django.utils.http import url_has_allowed_host_and_scheme
 # Create your views here.
 
 #Listar Pedidos
@@ -56,6 +57,9 @@ def cambiar_estado(request, pedido_id):
         #en caso que se cancele se guarda con un motivo
         if nuevo_estado == 'CANC':
             motivo = request.POST.get('motivo_cancelacion', '').strip()
+            detalle = request.POST.get('detalle', '').strip()
+            if detalle:
+                motivo = f'{motivo} - {detalle}' if motivo else detalle
 
             if motivo:
                 pedido.observaciones += '\nMotivo: ' + motivo
@@ -85,14 +89,34 @@ def historial_pedidos(request):
         pedidos = pedidos.filter(fecha_creacion__date__lte=fecha_fin)
     if busqueda:
         pedidos = pedidos.filter(Q(folio__icontains=busqueda) | Q(cliente__nombre__icontains=busqueda))
+
+    #resumen de ventas: no se cuentan los pedidos cancelados
+    pedidos_validos = pedidos.exclude(estado='CANC')
+    total_ventas = pedidos_validos.aggregate(total=Sum('total'))['total'] or 0
+
+    #productos mas vendidos (los 5 con mas unidades)
+    mas_vendidos = list(
+        DetallePedido.objects.filter(pedido__in=pedidos_validos)
+        .values('nombre_producto')
+        .annotate(unidades=Sum('cantidad'))
+        .order_by('-unidades')[:5]
+    )
+    #el primero es el maximo: sirve para calcular el largo de las barras
+    maximo_vendido = mas_vendidos[0]['unidades'] if mas_vendidos else 1
+
     #se refleja los resultados al html
-#se refleja los resultados al html
     return render(request, 'pedidos/historial.html', {
-        'pedidos': pedidos,
+        'pedidos': pedidos.select_related('cliente', 'pago').prefetch_related('detalle'),
         'fecha_inicio': fecha_inicio,
         'fecha_fin': fecha_fin,
         'busqueda': busqueda,
+        'total_ventas': total_ventas,
+        'cantidad_pedidos': pedidos_validos.count(),
+        'mas_vendidos': mas_vendidos,
+        'maximo_vendido': maximo_vendido,
     })
+
+
 #medios de pago
 @transaction.atomic
 def seleccionar_pago(request, pedido_id):
@@ -217,41 +241,49 @@ def asignar_repartidor(request, pedido_id):
 @rol_requerido(Usuario.Rol.DUENO, Usuario.Rol.CAJERO)
 def notificaciones_pedidos(request):
     #consultamos los pedidos recientes
-    pedidos = Pedido.objects.all().order_by('-fecha_creacion')[:50]
-    folio = request.GET.get('folio', '')
+    pedidos = Pedido.objects.select_related('cliente').order_by('-fecha_creacion')[:50]
+    folio = request.GET.get('folio', '').strip()
     pedido = None
     mensaje = ''
+    mensaje_listo = ''
+    telefono_whatsapp = ''
     #aqui buscamos el pedido seleccionado
     if folio:
-        pedido = Pedido.objects.filter(folio=folio).first()
+        pedido = Pedido.objects.select_related('cliente').filter(folio=folio).first()
 
         if pedido:
-            detalle = ''
-
+            #ej: "1 × Completo italiano (sin tomate), 1 × Bebida 500 ml"
+            lineas = []
             for producto in pedido.detalle.all():
-                detalle += (
-                    f'{producto.cantidad} X ' f'{producto.nombre_producto},')
+                linea = f'{producto.cantidad} × {producto.nombre_producto}'
+                if producto.personalizacion:
+                    linea += f' ({producto.personalizacion})'
+                lineas.append(linea)
+            detalle = ', '.join(lineas)
+
+            nombre = pedido.cliente.nombre.split(' ')[0] if pedido.cliente.nombre else ''
             mensaje = (
-                f'Hola {pedido.cliente.nombre}, '
-                f'recibimos tu pedido {pedido.folio}. '
-                f'Detalle: {detalle}. '
-                f'Gracias por preferir ATOMS '
+                f"Hola {nombre}, recibimos tu pedido {pedido.folio} en Sandwichs Atom's.\n\n"
+                f'Detalle: {detalle}.\n\n'
+                f'Te avisaremos cuando esté listo. ¡Gracias por preferirnos!'
             )
+            if pedido.modalidad_entrega == 'DESP':
+                mensaje_listo = f'Hola {nombre}, tu pedido {pedido.folio} ya está listo y pronto saldrá a despacho.'
+            else:
+                mensaje_listo = f'Hola {nombre}, tu pedido {pedido.folio} ya está listo. Puedes pasar a retirarlo al local.'
+
+            #WhatsApp necesita el número solo con dígitos (ej: 56912345678)
+            telefono_whatsapp = ''.join(c for c in pedido.cliente.telefono if c.isdigit())
         else:
             messages.error(request, 'No se encontró el pedido')
-    return render(request, 'pedidos/notificaciones.html',{
+    return render(request, 'pedidos/notificaciones.html', {
         'pedidos': pedidos,
         'pedido': pedido,
+        'folio': folio,
         'mensaje': mensaje,
+        'mensaje_listo': mensaje_listo,
+        'telefono_whatsapp': telefono_whatsapp,
     })
-
-def ver_carrito(request):
-    carrito = request.session.get('carrito', [])
-    return render(request, 'pedidos/carrito.html', {
-        'carrito': carrito,
-        'subtotal': sum(item['subtotal'] for item in carrito),
-    })
-
 
 @require_POST
 def agregar_carrito(request, producto_id):
@@ -287,11 +319,9 @@ def agregar_carrito(request, producto_id):
             'cantidad': cantidad, 'personalizacion': personalizacion, 'subtotal': precio * cantidad,
             'opciones': opcion_ids, 'nota': nota,
         })
-    request.session['carrito'] = carrito
-    request.session['cantidad_carrito'] = sum(item['cantidad'] for item in carrito)
-    request.session.pop('datos_entrega_pedido', None)
+    _guardar_carrito(request, carrito)
     messages.success(request, 'Producto agregado al carrito.')
-    return redirect('ver_carrito')
+    return _volver(request)
 
 
 @require_POST
@@ -376,3 +406,75 @@ def crear_pedido(request):
 
     messages.success(request, 'Tu pedido fue creado correctamente.')
     return redirect('seleccionar_pago', pedido_id=pedido.id)
+
+# ---------- Carrito (guardado en la sesión) ----------
+# Cada línea del carrito es un diccionario dentro de request.session['carrito'].
+# Para +, - y eliminar se usa la posición de la línea en la lista (0, 1, 2...).
+
+MAXIMO_POR_LINEA = 20
+
+
+def _guardar_carrito(request, carrito):
+    """Guarda el carrito en la sesión y actualiza el contador del botón."""
+    request.session['carrito'] = carrito
+    request.session['cantidad_carrito'] = sum(item['cantidad'] for item in carrito)
+    # Si el carrito cambia, los datos de entrega guardados ya no son válidos (el total cambió)
+    request.session.pop('datos_entrega_pedido', None)
+
+
+def _volver(request):
+    """Vuelve a la página desde donde se hizo la acción (panel lateral o página del carrito)."""
+    destino = request.POST.get('next', '')
+    if destino and url_has_allowed_host_and_scheme(
+        destino, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        return redirect(destino)
+    return redirect('ver_carrito')
+
+
+def ver_carrito(request):
+    carrito = request.session.get('carrito', [])
+    return render(request, 'pedidos/ver_carrito.html', {
+        'items': carrito,
+        'total': sum(item['subtotal'] for item in carrito),
+        'maximo_por_linea': MAXIMO_POR_LINEA,
+    })
+
+
+@require_POST
+def incrementar_item(request, item_id):
+    carrito = request.session.get('carrito', [])
+    if 0 <= item_id < len(carrito):
+        item = carrito[item_id]
+        if item['cantidad'] < MAXIMO_POR_LINEA:
+            item['cantidad'] += 1
+            item['subtotal'] = item['cantidad'] * item['precio_unitario']
+            _guardar_carrito(request, carrito)
+        else:
+            messages.warning(request, f'El máximo es de {MAXIMO_POR_LINEA} unidades por línea.')
+    return _volver(request)
+
+
+@require_POST
+def disminuir_item(request, item_id):
+    carrito = request.session.get('carrito', [])
+    if 0 <= item_id < len(carrito):
+        item = carrito[item_id]
+        if item['cantidad'] > 1:
+            item['cantidad'] -= 1
+            item['subtotal'] = item['cantidad'] * item['precio_unitario']
+        else:
+            # Si estaba en 1, el "-" quita el producto del carrito
+            carrito.pop(item_id)
+        _guardar_carrito(request, carrito)
+    return _volver(request)
+
+
+@require_POST
+def eliminar_item(request, item_id):
+    carrito = request.session.get('carrito', [])
+    if 0 <= item_id < len(carrito):
+        eliminado = carrito.pop(item_id)
+        _guardar_carrito(request, carrito)
+        messages.info(request, f"Se quitó '{eliminado['nombre_producto']}' del carrito.")
+    return _volver(request)

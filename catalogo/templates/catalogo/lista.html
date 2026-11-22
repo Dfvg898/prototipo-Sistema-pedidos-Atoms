@@ -67,6 +67,7 @@
                     {% else %}
                     <form method="post" action="{% url 'agregar_carrito' p.pk %}">
                         {% csrf_token %}
+                        <input type="hidden" name="next" value="{{ request.get_full_path }}">
                         <button type="submit" class="btn btn-primary">Agregar</button>
                     </form>
                     {% endif %}
@@ -200,6 +201,7 @@
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <form class="modal-content" method="post" action="{% url 'agregar_carrito' p.pk %}">
             {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
 
             <div class="modal-header">
                 <h2 class="modal-title h5" id="tituloModal{{ p.pk }}">Personaliza tu {{ p.nombre|lower }}</h2>
@@ -249,4 +251,4 @@
 </div>
 {% endif %}
 {% endfor %}
-{% endblock overlays %}
+{% endblock overlays %}

@@ -114,3 +114,37 @@ class AsignacionDespacho(models.Model):
     estado_pedido = models.CharField(max_length=15, choices=Pedido.ESTADOS)
     asignado_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     registrada_en = models.DateTimeField(auto_now_add=True)
+
+class Carrito(models.Model):
+    # Un usuario (Cliente) tiene un solo carrito
+    usuario = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='carrito')
+    creado = models.DateTimeField(auto_now_add=True)
+
+    # Método para calcular el total del carrito
+    def total(self):
+        total = 0
+        # self.itemcarrito_set: campo espejo que se crea de la relación Carrito - ItemCarrito
+        for item in self.itemcarrito_set.all():
+            total += item.subtotal()
+        return total
+
+    def __str__(self):
+        return f"Carrito de {self.usuario.nombre}"
+
+class ItemCarrito(models.Model):
+    # Esta relación crea en Carrito un atributo llamado itemcarrito_set
+    carrito = models.ForeignKey(Carrito, on_delete=models.CASCADE)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    cantidad = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['carrito', 'producto'], name='un_item_por_producto_y_carrito'),
+        ]
+
+    # Método para calcular el precio del item
+    def subtotal(self):
+        return self.cantidad * self.producto.precio_base
+
+    def __str__(self):
+        return f"{self.cantidad} x {self.producto.nombre}"

@@ -1,0 +1,173 @@
+/* ==========================================================
+   Checkout (datos de entrega y pago) - estilos compartidos
+   Usa los colores definidos en catalogo/css/atoms.css
+   ========================================================== */
+
+/* ---------- Pasos de la compra: Carrito > Entrega > Pago > Confirmación ---------- */
+.pasos-compra {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0 auto 2.5rem;
+    max-width: 56rem;
+}
+
+.pasos-compra li {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--texto-suave);
+}
+
+/* Línea que une un paso con el anterior */
+.pasos-compra li + li::before {
+    content: "";
+    position: absolute;
+    top: 1.375rem;
+    right: 50%;
+    width: 100%;
+    height: 0.1875rem;
+    background: var(--borde);
+    z-index: 0;
+}
+.pasos-compra li.hecho + li::before { background: var(--verde); }
+
+.paso-circulo {
+    position: relative;
+    z-index: 1;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 0.125rem solid var(--borde);
+    font-weight: 800;
+}
+
+.pasos-compra .hecho .paso-circulo {
+    background: var(--verde-oscuro);
+    border-color: var(--verde-oscuro);
+    color: #fff;
+}
+.pasos-compra .hecho { color: var(--verde-oscuro); }
+
+.pasos-compra .actual .paso-circulo {
+    background: var(--amarillo);
+    border-color: var(--naranja);
+    color: var(--texto);
+}
+.pasos-compra .actual { color: var(--texto); }
+
+/* ---------- Títulos de la página ---------- */
+.titulo-pagina {
+    font-size: clamp(2rem, 4vw, 2.6rem);
+    margin-bottom: 0.25rem;
+}
+
+.panel h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+}
+
+/* ---------- Opciones seleccionables (modalidad de entrega y medio de pago) ---------- */
+.opcion-tarjeta {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 0.125rem solid var(--borde);
+    border-radius: var(--radio);
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 0.875rem;
+    cursor: pointer;
+    transition: border-color 0.15s, background-color 0.15s;
+}
+
+.opcion-tarjeta:hover { border-color: var(--verde); }
+
+/* La tarjeta elegida se pinta amarilla con borde naranjo */
+.opcion-tarjeta:has(input:checked) {
+    background: #FFF3CC;
+    border-color: var(--naranja);
+    box-shadow: 0 0 0 0.2rem rgba(245, 138, 7, 0.15);
+}
+
+.opcion-tarjeta .form-check-input {
+    flex-shrink: 0;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin: 0;
+    cursor: pointer;
+    position: relative;
+    z-index: 1; /* queda sobre el label para poder hacer clic directo */
+}
+
+.opcion-tarjeta .form-check-input:checked {
+    background-color: #fff;
+    border: 0.4rem solid var(--verde-oscuro);
+    background-image: none;
+}
+
+.opcion-tarjeta i {
+    font-size: 1.75rem;
+    color: var(--verde-oscuro);
+}
+
+.opcion-tarjeta strong { display: block; font-size: 1.05rem; }
+.opcion-tarjeta small { color: var(--texto-suave); font-size: 0.92rem; }
+
+/* El label cubre toda la tarjeta para que se pueda hacer clic en cualquier parte */
+.opcion-tarjeta label { cursor: pointer; flex: 1; }
+.opcion-tarjeta label::after { content: ""; position: absolute; inset: 0; }
+
+/* ---------- Resumen de la compra ---------- */
+.linea-resumen {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    border-bottom: 0.0625rem dashed var(--borde);
+}
+.linea-resumen small { display: block; color: var(--texto-suave); }
+.linea-resumen .precio { font-weight: 700; white-space: nowrap; }
+
+.total-banda {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.25rem;
+    padding: 1rem 1.25rem;
+    border-radius: 0.625rem;
+    background: var(--verde-oscuro);
+    color: #fff;
+    font-family: var(--fuente-titulo);
+    font-weight: 800;
+    font-size: 1.75rem;
+    text-transform: uppercase;
+}
+
+.nota-info {
+    margin-top: 1.25rem;
+    padding: 0.875rem 1rem;
+    border: 0.0625rem solid var(--verde);
+    border-radius: 0.625rem;
+    color: var(--texto-suave);
+    font-size: 0.95rem;
+}
+
+/* ---------- Botón naranjo grande con flecha ---------- */
+.btn-continuar { padding-inline: 1.25rem; font-size: 1.05rem; }
+
+@media (max-width: 36rem) {
+    .paso-nombre { font-size: 0.8rem; }
+    .paso-circulo { width: 2.25rem; height: 2.25rem; }
+    .pasos-compra li + li::before { top: 1.125rem; }
+    .total-banda { font-size: 1.4rem; }
+}

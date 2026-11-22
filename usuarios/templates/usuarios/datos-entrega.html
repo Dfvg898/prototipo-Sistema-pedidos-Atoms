@@ -1,210 +1,192 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATOMS | Datos del cliente y entrega</title>
-    <link rel="icon" type="image/png" href="{% static 'img/atom.png' %}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/datos-entrega.css' %}">
-</head>
-<body>
-    <nav class="navbar navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="{% url 'lista' %}">ATOMS</a>
-            <span class="navbar-text">Datos del cliente y entrega</span>
-        </div>
-    </nav>
+{% extends "catalogo/base.html" %}
+{% load static formato %}
 
-    <main class="container py-4">
-        <header class="mb-4">
-            <h1 class="h3">Datos del cliente</h1>
-            <p class="text-secondary">Completa la información de contacto y selecciona cómo recibir tu pedido.</p>
-        </header>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/checkout.css' %}">
+<link rel="stylesheet" href="{% static 'css/datos-entrega.css' %}">
+{% endblock %}
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+{% block content %}
+<section class="container py-5">
+
+    {% include 'pedidos/_pasos_compra.html' with paso=2 %}
+
+    <header class="mb-4">
+        <h1 class="titulo-pagina">Datos del cliente</h1>
+        <p class="text-secondary mb-0">Completa tu información de contacto y elige cómo recibir tu pedido.</p>
+    </header>
+
+    <div class="row g-4">
+        <!-- Formulario -->
+        <div class="col-lg-7">
+            <form method="post" action="{% url 'datos_entrega' %}" class="panel" novalidate>
+                {% csrf_token %}
+
+                <h2>Información de contacto</h2>
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre completo <span class="text-danger">*</span></label>
+                    {{ form.nombre_cliente }}
+                    {% if form.nombre_cliente.errors %}
+                    <div class="invalid-feedback d-block">{{ form.nombre_cliente.errors.0 }}</div>
+                    {% endif %}
                 </div>
-            {% endfor %}
-        {% endif %}
 
-        <div class="row g-4">
-            <section class="col-lg-7">
-                <form method="post" action="{% url 'datos_entrega' %}" class="panel" novalidate>
+                <div class="mb-4">
+                    <label for="telefono" class="form-label">Teléfono de contacto <span class="text-danger">*</span></label>
+                    {{ form.telefono }}
+                    {% if form.telefono.errors %}
+                    <div class="invalid-feedback d-block">{{ form.telefono.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <h2>Modalidad de entrega</h2>
+                <div class="opcion-tarjeta">
+                    <input class="form-check-input" type="radio" name="modalidad_entrega" id="retiro" value="RETIRO"
+                           {% if modalidad_actual != 'DESPACHO' %}checked{% endif %}>
+                    <i class="bi bi-shop" aria-hidden="true"></i>
+                    <label for="retiro">
+                        <strong>Retiro en local</strong>
+                        <small>Retira el pedido directamente en el local, sin costo adicional.</small>
+                    </label>
+                </div>
+                <div class="opcion-tarjeta">
+                    <input class="form-check-input" type="radio" name="modalidad_entrega" id="domicilio" value="DESPACHO"
+                           {% if modalidad_actual == 'DESPACHO' %}checked{% endif %}>
+                    <i class="bi bi-bicycle" aria-hidden="true"></i>
+                    <label for="domicilio">
+                        <strong>Despacho a domicilio</strong>
+                        <small>Recibe el pedido en la dirección indicada (+{{ costo_despacho_fijo|pesos }}).</small>
+                    </label>
+                </div>
+                {% if form.modalidad_entrega.errors %}
+                <div class="invalid-feedback d-block mb-3">{{ form.modalidad_entrega.errors.0 }}</div>
+                {% endif %}
+
+                <!-- Solo se muestra con "Despacho a domicilio" -->
+                <div id="bloque-despacho" class="{% if modalidad_actual != 'DESPACHO' %}d-none{% endif %}">
+                    <div class="mb-3">
+                        <label for="direccion" class="form-label">Dirección de entrega <span class="text-danger">*</span></label>
+                        {{ form.direccion }}
+                        {% if form.direccion.errors %}
+                        <div class="invalid-feedback d-block">{{ form.direccion.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="referencia" class="form-label">Referencia de la dirección</label>
+                        {{ form.referencia }}
+                        {% if form.referencia.errors %}
+                        <div class="invalid-feedback d-block">{{ form.referencia.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-2">
+                    <label for="indicaciones" class="form-label">Indicaciones adicionales</label>
+                    {{ form.observaciones }}
+                    {% if form.observaciones.errors %}
+                    <div class="invalid-feedback d-block">{{ form.observaciones.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex flex-wrap justify-content-between gap-2 mt-4">
+                    <a href="{% url 'lista' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i> Volver al catálogo
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-continuar">
+                        Guardar datos <i class="bi bi-check2-circle ms-1"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Resumen -->
+        <aside class="col-lg-5">
+            <div class="panel">
+                <h2>Resumen de compra</h2>
+
+                {% for item in items_carrito %}
+                <div class="linea-resumen">
+                    <span>
+                        {{ item.cantidad }} × {{ item.nombre_producto }}
+                        {% if item.personalizacion %}<small>{{ item.personalizacion }}</small>{% endif %}
+                    </span>
+                    <span class="precio">{{ item.subtotal|pesos }}</span>
+                </div>
+                {% empty %}
+                <p class="text-secondary">Tu carrito está vacío.</p>
+                {% endfor %}
+
+                <div class="linea-resumen">
+                    <span>Despacho</span>
+                    <span class="precio" id="despacho-valor" data-costo="{{ costo_despacho_fijo }}">{{ costo_despacho|pesos }}</span>
+                </div>
+
+                <div class="total-banda">
+                    <span>Total estimado</span>
+                    <span id="total-valor" data-subtotal="{{ subtotal }}">{{ total_estimado|pesos }}</span>
+                </div>
+
+                {% if datos_guardados %}
+                <div class="datos-guardados">
+                    <div class="fw-bold mb-1"><i class="bi bi-check-circle-fill me-1"></i> Datos registrados para el pedido</div>
+                    <div><strong>Cliente:</strong> {{ datos_guardados.nombre_cliente }} ({{ datos_guardados.telefono }})</div>
+                    <div><strong>Modalidad:</strong> {% if datos_guardados.modalidad_entrega == 'DESPACHO' %}Despacho a domicilio{% else %}Retiro en local{% endif %}</div>
+                    {% if datos_guardados.direccion %}
+                    <div><strong>Dirección:</strong> {{ datos_guardados.direccion }}{% if datos_guardados.referencia %} ({{ datos_guardados.referencia }}){% endif %}</div>
+                    {% endif %}
+                    {% if datos_guardados.observaciones %}
+                    <div><strong>Indicaciones:</strong> {{ datos_guardados.observaciones }}</div>
+                    {% endif %}
+                </div>
+
+                {% url 'crear_pedido' as url_crear_pedido %}
+                {% if hay_carrito and url_crear_pedido %}
+                <form method="post" action="{{ url_crear_pedido }}" class="mt-3">
                     {% csrf_token %}
-
-                    <h2 class="h5 mb-3">Información de contacto</h2>
-                    <div class="mb-3">
-                        <label for="nombre" class="form-label">Nombre completo <span class="text-danger">*</span></label>
-                        {{ form.nombre_cliente }}
-                        {% if form.nombre_cliente.errors %}
-                            <div class="invalid-feedback d-block">
-                                {{ form.nombre_cliente.errors.0 }}
-                            </div>
-                        {% endif %}
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="telefono" class="form-label">Teléfono de contacto <span class="text-danger">*</span></label>
-                        {{ form.telefono }}
-                        {% if form.telefono.errors %}
-                            <div class="invalid-feedback d-block">
-                                {{ form.telefono.errors.0 }}
-                            </div>
-                        {% endif %}
-                    </div>
-
-                    <h2 class="h5 mt-4 mb-3">Modalidad de entrega</h2>
-                    <div class="opcion-entrega">
-                        <input
-                            class="form-check-input"
-                            type="radio"
-                            name="modalidad_entrega"
-                            id="retiro"
-                            value="RETIRO"
-                            {% if modalidad_actual != 'DESPACHO' %}checked{% endif %}
-                        >
-                        <label class="form-check-label" for="retiro">
-                            <strong>Retiro en local (Sin costo adicional)</strong>
-                            <span>Retira el pedido directamente en el local ATOMS.</span>
-                        </label>
-                    </div>
-                    <div class="opcion-entrega">
-                        <input
-                            class="form-check-input"
-                            type="radio"
-                            name="modalidad_entrega"
-                            id="domicilio"
-                            value="DESPACHO"
-                            {% if modalidad_actual == 'DESPACHO' %}checked{% endif %}
-                        >
-                        <label class="form-check-label" for="domicilio">
-                            <strong>Despacho a domicilio (+${{ costo_despacho_fijo }})</strong>
-                            <span>Recibe el pedido en la dirección indicada.</span>
-                        </label>
-                    </div>
-                    {% if form.modalidad_entrega.errors %}
-                        <div class="invalid-feedback d-block mb-3">
-                            {{ form.modalidad_entrega.errors.0 }}
-                        </div>
-                    {% endif %}
-
-                    <div id="bloque-despacho" class="{% if modalidad_actual != 'DESPACHO' %}d-none{% endif %}">
-                        <div class="mt-3">
-                            <label for="direccion" class="form-label">Dirección de entrega <span class="text-danger">*</span></label>
-                            {{ form.direccion }}
-                            {% if form.direccion.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {{ form.direccion.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-                        <div class="mt-3">
-                            <label for="referencia" class="form-label">Referencia de la dirección</label>
-                            {{ form.referencia }}
-                            {% if form.referencia.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {{ form.referencia.errors.0 }}
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="mt-3">
-                        <label for="indicaciones" class="form-label">Observaciones o comentarios especiales del pedido</label>
-                        {{ form.observaciones }}
-                        {% if form.observaciones.errors %}
-                            <div class="invalid-feedback d-block">
-                                {{ form.observaciones.errors.0 }}
-                            </div>
-                        {% endif %}
-                    </div>
-
-                    <div class="d-flex flex-wrap gap-2 mt-4">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check2-circle me-1"></i> Guardar datos de entrega
-                        </button>
-                        <a href="{% url 'lista' %}" class="btn btn-outline-secondary">
-                            Volver al catálogo
-                        </a>
-                    </div>
+                    <button type="submit" class="btn btn-primary btn-continuar w-100">
+                        Continuar al pago <i class="bi bi-arrow-right ms-1"></i>
+                    </button>
                 </form>
-            </section>
+                {% endif %}
+                {% else %}
+                <p class="nota-info mb-0">
+                    <i class="bi bi-info-circle me-1"></i>
+                    El costo de despacho solo se aplica si eliges <strong>despacho a domicilio</strong>.
+                </p>
+                {% endif %}
+            </div>
+        </aside>
+    </div>
+</section>
+{% endblock %}
 
-            <aside class="col-lg-5">
-                <div class="panel">
-                    <h2 class="h5">Resumen de compra</h2>
-                    <div class="linea-resumen">
-                        <span>Subtotal productos</span>
-                        <span id="subtotal-valor" data-subtotal="{{ subtotal }}">${{ subtotal }}</span>
-                    </div>
-                    <div class="linea-resumen">
-                        <span>Despacho</span>
-                        <span id="despacho-valor" data-costo="{{ costo_despacho_fijo }}">${{ costo_despacho }}</span>
-                    </div>
-                    <div class="total-resumen">
-                        <span>Total estimado</span>
-                        <span id="total-valor">${{ total_estimado }}</span>
-                    </div>
+{% block extra_js %}
+<script>
+    // Muestra u oculta la dirección y recalcula el total según la modalidad elegida
+    (function () {
+        const radioRetiro = document.getElementById("retiro");
+        const radioDomicilio = document.getElementById("domicilio");
+        const bloqueDespacho = document.getElementById("bloque-despacho");
+        const despachoEl = document.getElementById("despacho-valor");
+        const totalEl = document.getElementById("total-valor");
 
-                    {% url 'crear_pedido' as url_crear_pedido %}
-                    {% if datos_guardados and hay_carrito and url_crear_pedido %}
-                        <form method="post" action="{{ url_crear_pedido }}" class="mt-3">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-primary w-100">Crear pedido y continuar al pago</button>
-                        </form>
-                    {% endif %}
-                    {% if datos_guardados %}
-                    <div class="alert alert-success border mt-3 mb-0 small">
-                        <div class="fw-bold mb-1"><i class="bi bi-check-circle-fill me-1"></i> Datos registrados para el pedido:</div>
-                        <div><strong>Cliente:</strong> {{ datos_guardados.nombre_cliente }} ({{ datos_guardados.telefono }})</div>
-                        <div><strong>Modalidad:</strong> {{ datos_guardados.modalidad_entrega }}</div>
-                        {% if datos_guardados.direccion %}
-                        <div><strong>Dirección:</strong> {{ datos_guardados.direccion }} {% if datos_guardados.referencia %}({{ datos_guardados.referencia }}){% endif %}</div>
-                        {% endif %}
-                        {% if datos_guardados.observaciones %}
-                        <div><strong>Observaciones:</strong> {{ datos_guardados.observaciones }}</div>
-                        {% endif %}
-                    </div>
-                    {% else %}
-                    <div class="alert alert-light border mt-3 mb-0 small">
-                        <i class="bi bi-info-circle me-2"></i>El costo de despacho solo se aplica si seleccionas <strong>Despacho a domicilio</strong>.
-                    </div>
-                    {% endif %}
-                </div>
-            </aside>
-        </div>
-    </main>
+        const subtotal = parseInt(totalEl.dataset.subtotal || "0", 10);
+        const costoDespacho = parseInt(despachoEl.dataset.costo || "0", 10);
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        (function () {
-            const radioRetiro = document.getElementById("retiro");
-            const radioDomicilio = document.getElementById("domicilio");
-            const bloqueDespacho = document.getElementById("bloque-despacho");
-            const subtotalEl = document.getElementById("subtotal-valor");
-            const despachoEl = document.getElementById("despacho-valor");
-            const totalEl = document.getElementById("total-valor");
+        function pesos(numero) {
+            return "$" + numero.toLocaleString("es-CL");
+        }
 
-            const subtotal = parseInt(subtotalEl.dataset.subtotal || "0", 10);
-            const costoDespachoFijo = parseInt(despachoEl.dataset.costo || "2000", 10);
+        function actualizarModalidad() {
+            const esDespacho = radioDomicilio.checked;
+            bloqueDespacho.classList.toggle("d-none", !esDespacho);
+            const costo = esDespacho ? costoDespacho : 0;
+            despachoEl.textContent = pesos(costo);
+            totalEl.textContent = pesos(subtotal + costo);
+        }
 
-            function actualizarModalidad() {
-                const esDespacho = radioDomicilio.checked;
-                bloqueDespacho.classList.toggle("d-none", !esDespacho);
-                const costoActual = esDespacho ? costoDespachoFijo : 0;
-                despachoEl.textContent = "$" + costoActual;
-                totalEl.textContent = "$" + (subtotal + costoActual);
-            }
-
-            radioRetiro.addEventListener("change", actualizarModalidad);
-            radioDomicilio.addEventListener("change", actualizarModalidad);
-        })();
-    </script>
-</body>
-</html>
+        radioRetiro.addEventListener("change", actualizarModalidad);
+        radioDomicilio.addEventListener("change", actualizarModalidad);
+    })();
+</script>
+{% endblock %}
