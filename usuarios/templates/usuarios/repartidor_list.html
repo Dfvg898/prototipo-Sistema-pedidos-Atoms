@@ -84,7 +84,7 @@
             <div class="modal-body">
                 ¿Seguro que quieres eliminar al repartidor <strong>{{ r.nombre_repartidor }}</strong>?
                 {% if r.cuenta_usuario %}
-                <br><span class="text-secondary small">También se eliminará su cuenta de usuario asociada ({{ r.cuenta_usuario.correo }}).</span>
+                <br><span class="text-secondary small">Se desvinculará la cuenta asociada ({{ r.cuenta_usuario.correo }}).</span>
                 {% endif %}
             </div>
             <div class="modal-footer">

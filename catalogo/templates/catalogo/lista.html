@@ -65,15 +65,10 @@
                     <button type="button" class="btn btn-primary"
                             data-bs-toggle="modal" data-bs-target="#modalProducto{{ p.pk }}">Personalizar</button>
                     {% else %}
-                    {% if p.opciones_activas %}
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalProducto{{ p.pk }}">
-                            Personalizar
-                        </button>
-                        {% else %}
-                        <button type="button" class="btn btn-primary" data-producto="{{ p.pk }}">
-                            Agregar
-                        </button>
-                        {% endif %}
+                    <form method="post" action="{% url 'agregar_carrito' p.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary">Agregar</button>
+                    </form>
                     {% endif %}
                 </div>
             </div>
@@ -203,7 +198,8 @@
 <div class="modal fade" id="modalProducto{{ p.pk }}" tabindex="-1"
      aria-labelledby="tituloModal{{ p.pk }}" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content" data-precio-base="{{ p.precio_base }}">
+        <form class="modal-content" method="post" action="{% url 'agregar_carrito' p.pk %}">
+            {% csrf_token %}
 
             <div class="modal-header">
                 <h2 class="modal-title h5" id="tituloModal{{ p.pk }}">Personaliza tu {{ p.nombre|lower }}</h2>
@@ -232,23 +228,23 @@
 
                 <div class="mb-3">
                     <label for="nota{{ p.pk }}" class="form-label">Nota para el local (opcional)</label>
-                    <input type="text" class="form-control" id="nota{{ p.pk }}" maxlength="200" placeholder="Ej. Cortar en dos">
+                    <input type="text" class="form-control" id="nota{{ p.pk }}" name="nota" maxlength="200" placeholder="Ej. Cortar en dos">
                 </div>
 
                 <label for="cantidad{{ p.pk }}" class="form-label">Cantidad</label>
                 <input type="number" class="form-control w-25 cantidad-producto"
-                       id="cantidad{{ p.pk }}" value="1" min="1" max="20">
+                       id="cantidad{{ p.pk }}" name="cantidad" value="1" min="1" max="20">
             </div>
 
             <div class="modal-footer justify-content-between">
                 <span class="producto-precio total-modal fs-5 fw-bold text-primary">${{ p.precio_base }}</span>
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary btn-agregar-pedido" data-producto="{{ p.pk }}">Agregar al pedido</button>
+                    <button type="submit" class="btn btn-primary">Agregar al pedido</button>
                 </div>
             </div>
 
-        </div>
+        </form>
     </div>
 </div>
 {% endif %}

@@ -1,8 +1,12 @@
+from django.apps import apps
+from django.db.models.deletion import ProtectedError
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.utils.http import url_has_allowed_host_and_scheme
-from django.views.decorators.http import require_POST
+from django.views.decorators.cache import never_cache
+from django.views.decorators.http import require_GET, require_POST
 from .models import Usuario, Repartidor, BitacoraEvento
 from .forms import (
     LoginPersonalForm,
@@ -21,6 +25,8 @@ EXPIRACION_SESION_REPARTIDOR_SEG = 60 * 60
 def redireccion_por_rol(usuario: Usuario) -> str:
     if usuario.rol == Usuario.Rol.DUENO:
         return "/usuarios/personal/"
+    if usuario.rol == Usuario.Rol.CAJERO and apps.is_installed("pedidos"):
+        return "usuarios_alertas_pedidos"
     return "/"
 
 
@@ -180,9 +186,6 @@ def usuarios_toggle_activo_view(request, pk):
 
     usuario_obj.activo = not usuario_obj.activo
     usuario_obj.save(update_fields=["activo"])
-    if usuario_obj.repartidor and usuario_obj.repartidor.activo != usuario_obj.activo:
-        usuario_obj.repartidor.activo = usuario_obj.activo
-        usuario_obj.repartidor.save(update_fields=["activo"])
     estado_txt = "activada" if usuario_obj.activo else "desactivada"
     messages.info(request, f"La cuenta de {usuario_obj.nombre} fue {estado_txt}.")
     return redirect("usuarios_personal")
@@ -206,10 +209,7 @@ def usuarios_delete_view(request, pk):
         return redirect("usuarios_personal")
 
     nombre = usuario_obj.nombre
-    repartidor_asociado = usuario_obj.repartidor
     usuario_obj.delete()
-    if repartidor_asociado:
-        repartidor_asociado.delete()
     messages.success(request, f"El usuario '{nombre}' fue eliminado.")
     return redirect("usuarios_personal")
 
@@ -259,10 +259,6 @@ def repartidores_toggle_view(request, pk):
     repartidor = get_object_or_404(Repartidor, pk=pk)
     repartidor.activo = not repartidor.activo
     repartidor.save(update_fields=["activo"])
-    if hasattr(repartidor, "cuenta_usuario") and repartidor.cuenta_usuario:
-        if repartidor.cuenta_usuario.activo != repartidor.activo:
-            repartidor.cuenta_usuario.activo = repartidor.activo
-            repartidor.cuenta_usuario.save(update_fields=["activo"])
     messages.info(request, f"Estado de '{repartidor.nombre_repartidor}' actualizado.")
     return redirect("usuarios_repartidores")
 
@@ -272,10 +268,11 @@ def repartidores_toggle_view(request, pk):
 def repartidores_delete_view(request, pk):
     repartidor = get_object_or_404(Repartidor, pk=pk)
     nombre = repartidor.nombre_repartidor
-    cuenta = getattr(repartidor, "cuenta_usuario", None)
-    if cuenta and cuenta.pk != request.user.pk:
-        cuenta.delete()
-    repartidor.delete()
+    try:
+        repartidor.delete()
+    except ProtectedError:
+        messages.error(request, "El repartidor tiene historial asociado. Puedes desactivarlo.")
+        return redirect("usuarios_repartidores")
     messages.success(request, f"El repartidor '{nombre}' fue eliminado.")
     return redirect("usuarios_repartidores")
 
@@ -299,9 +296,33 @@ def bitacora_list_view(request):
     )
 
 
+@never_cache
+@rol_requerido(Usuario.Rol.DUENO, Usuario.Rol.CAJERO)
+@require_GET
+def alertas_pedidos_view(request):
+    return render(request, "usuarios/alertas_pedidos.html")
+
+
+@never_cache
+@rol_requerido(Usuario.Rol.DUENO, Usuario.Rol.CAJERO)
+@require_GET
+def pedidos_recibidos_view(request):
+    if not apps.is_installed("pedidos"):
+        return JsonResponse({"error": "Pedidos no está disponible."}, status=503)
+    Pedido = apps.get_model("pedidos", "Pedido")
+    recibidos = Pedido.objects.filter(estado="RECI")
+    folios = list(recibidos.order_by("-fecha_creacion", "-pk").values_list("folio", flat=True)[:10])
+    return JsonResponse({"total": recibidos.count(), "folios": folios})
+
+
 def datos_entrega_view(request):
     datos_guardados = request.session.get("datos_entrega_pedido", {})
-    subtotal = int(request.session.get("subtotal_carrito", 2800))
+    carrito = request.session.get("carrito", [])
+    subtotal = 0
+
+    for item in carrito:
+        subtotal += int(item.get("precio_unitario", 0)) * int(item.get("cantidad", 1))
+    request.session["subtotal_carrito"] = subtotal
 
     if request.method == "POST":
         form = DatosEntregaCheckoutForm(request.POST)
@@ -357,7 +378,7 @@ def datos_entrega_view(request):
     total_estimado = subtotal + costo_despacho
     return render(
         request,
-        "datos-entrega.html",
+        "usuarios/datos-entrega.html",
         {
             "form": form,
             "modalidad_actual": modalidad_actual,
@@ -366,5 +387,6 @@ def datos_entrega_view(request):
             "costo_despacho_fijo": DatosEntregaCheckoutForm.COSTO_DESPACHO_FIJO,
             "total_estimado": total_estimado,
             "datos_guardados": request.session.get("datos_entrega_pedido"),
+            "hay_carrito": bool(carrito),
         },
     )

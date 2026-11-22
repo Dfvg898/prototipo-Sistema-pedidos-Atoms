@@ -1,0 +1,19 @@
+{% extends "catalogo/base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="container py-4" data-pedidos-url="{% url 'usuarios_pedidos_recibidos' %}">
+    <h1>Pedidos recibidos</h1>
+    <p id="resumen-pedidos" role="status" aria-live="polite">Consultando pedidos…</p>
+    <ul id="folios-pedidos" class="list-group mb-3"></ul>
+    {% url 'ver_pedidos' as gestion_pedidos %}
+    {% if gestion_pedidos %}<a class="btn btn-primary" href="{{ gestion_pedidos }}">Gestionar pedidos</a>{% endif %}
+    {% url 'lista_delivery' as gestion_entregas %}
+    {% if gestion_entregas %}<a class="btn btn-outline-secondary" href="{{ gestion_entregas }}">Gestión de entregas</a>{% endif %}
+    <noscript><p>Activa JavaScript para ver las alertas.</p></noscript>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'usuarios/js/alertas-pedidos.js' %}" defer></script>
+{% endblock %}

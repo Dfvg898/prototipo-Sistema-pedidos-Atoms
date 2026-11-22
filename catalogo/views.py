@@ -131,6 +131,9 @@ def productosUpdateView(request, pk):
         messages.error(request, "Revisa los campos marcados en rojo.")
             
     return render(request, "catalogo/producto_form.html", {"form": form, "producto": producto})
+
+@rol_requerido(Usuario.Rol.DUENO)
+@require_POST
 def productosDeleteView(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     if request.method == "POST":

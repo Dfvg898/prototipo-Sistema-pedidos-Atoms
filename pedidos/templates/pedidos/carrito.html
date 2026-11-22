@@ -1,0 +1,28 @@
+{% extends "catalogo/base.html" %}
+
+{% block content %}
+<section class="container py-4">
+    <h1>Mi carrito</h1>
+    {% if carrito %}
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead><tr><th>Producto</th><th>Cantidad</th><th>Subtotal</th></tr></thead>
+            <tbody>
+            {% for item in carrito %}
+                <tr>
+                    <td>{{ item.nombre_producto }}{% if item.personalizacion %}<div class="small">{{ item.personalizacion }}</div>{% endif %}</td>
+                    <td>{{ item.cantidad }}</td>
+                    <td>${{ item.subtotal }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <p class="fw-bold">Subtotal: ${{ subtotal }}</p>
+    <a class="btn btn-primary" href="{% url 'datos_entrega' %}">Continuar a datos de entrega</a>
+    {% else %}
+    <p>Tu carrito est? vacío.</p>
+    {% endif %}
+    <a class="btn btn-outline-secondary" href="{% url 'lista' %}">Volver al catálogo</a>
+</section>
+{% endblock %}

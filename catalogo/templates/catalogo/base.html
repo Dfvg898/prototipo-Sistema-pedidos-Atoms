@@ -100,10 +100,10 @@
 
                     <!-- Botón del carrito (el offcanvas #carro lo define la app de pedidos) -->
                     {% block boton_carrito %}
-                    <button type="button" class="btn btn-carrito position-relative ms-2" data-bs-toggle="offcanvas" data-bs-target="#carro" aria-controls="carro" aria-label="Abrir mi pedido">
+                    <a href="{% url 'ver_carrito' %}" class="btn btn-carrito position-relative ms-2" aria-label="Abrir mi pedido">
                         <i class="bi bi-cart3"></i>
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill badge-carro">{{ cantidad_carrito|default:0 }}</span>
-                    </button>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill badge-carro">{{ request.session.cantidad_carrito|default:0 }}</span>
+                    </a>
                     {% endblock %}
                 </div>
             </div>

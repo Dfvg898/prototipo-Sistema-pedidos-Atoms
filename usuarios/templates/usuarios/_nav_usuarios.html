@@ -11,4 +11,7 @@
        class="btn btn-sm {% if seccion_usuarios == 'bitacora' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
         <i class="bi bi-shield-check me-1"></i> Bitácora de Eventos
     </a>
+    <a href="{% url 'usuarios_alertas_pedidos' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-bell me-1"></i> Pedidos recibidos
+    </a>
 </div>

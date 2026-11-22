@@ -1,0 +1,33 @@
+{% extends "catalogo/base.html" %}
+
+{% block content %}
+<main class="container py-4">
+    <h1>Gesti?n de entregas</h1>
+    {% for pedido in pedidos %}
+        <article class="card mb-3">
+            <div class="card-body">
+                <h2 class="h5">{{ pedido.folio }}</h2>
+                <p>{{ pedido.get_estado_display }} ? {{ pedido.cliente.nombre }}</p>
+                <p>{{ pedido.cliente.telefono }} ? {{ pedido.direccion_entrega }}</p>
+                {% if pedido.referencia %}<p>{{ pedido.referencia }}</p>{% endif %}
+                {% if pedido.repartidor %}<p>Asignado a {{ pedido.repartidor }}</p>{% endif %}
+                {% if puede_asignar %}
+                    <form method="post" action="{% url 'asignar_repartidor' pedido.pk %}">
+                        {% csrf_token %}
+                        <label for="repartidor-{{ pedido.pk }}">Repartidor</label>
+                        <select class="form-select" name="repartidor_id" id="repartidor-{{ pedido.pk }}" required>
+                            <option value="">Seleccionar</option>
+                            {% for repartidor in repartidores %}
+                                <option value="{{ repartidor.pk }}"{% if pedido.repartidor_id == repartidor.pk %} selected{% endif %}>{{ repartidor }}</option>
+                            {% endfor %}
+                        </select>
+                        <button class="btn btn-primary mt-2" type="submit">Guardar asignaci?n</button>
+                    </form>
+                {% endif %}
+            </div>
+        </article>
+    {% empty %}
+        <p>No hay despachos disponibles.</p>
+    {% endfor %}
+</main>
+{% endblock %}

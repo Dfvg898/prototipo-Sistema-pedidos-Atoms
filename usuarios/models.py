@@ -1,4 +1,6 @@
 from datetime import timedelta
+from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -122,6 +124,11 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     MAX_INTENTOS_FALLIDOS = 5
     MINUTOS_BLOQUEO = 15
 
+    def clean(self):
+        super().clean()
+        if self.repartidor_id and self.rol != self.Rol.REPARTIDOR:
+            raise ValidationError({"repartidor": "Solo una cuenta con rol repartidor puede vincularse a un perfil."})
+
     def esta_bloqueado(self) -> bool:
         if self.bloqueado_hasta:
             if timezone.now() < self.bloqueado_hasta:
@@ -161,7 +168,7 @@ class BitacoraEvento(models.Model):
 
     id_evento = models.AutoField(primary_key=True)
     usuario = models.ForeignKey(
-        Usuario,
+        settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -200,3 +207,20 @@ class BitacoraEvento(models.Model):
 
     def __str__(self):
         return f"[{self.fecha_hora:%Y-%m-%d %H:%M}] {self.get_tipo_display()} - {self.descripcion}"
+
+
+class AvisoWhatsApp(models.Model):
+    class Evento(models.TextChoices):
+        CONFIRMACION = "confirmacion", "Confirmación"
+        LISTO = "listo", "Pedido listo"
+
+    folio = models.CharField(max_length=21)
+    evento = models.CharField(max_length=12, choices=Evento.choices)
+    mensaje = models.TextField()
+    creado_en = models.DateTimeField(auto_now_add=True)
+    simulado_en = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["folio", "evento"], name="usuarios_aviso_folio_evento_unico"),
+        ]

@@ -56,27 +56,12 @@ class UsuarioCrearForm(forms.ModelForm):
             validate_password(password)
         return password
 
-    def clean(self):
-        cleaned_data = super().clean()
-        rol = cleaned_data.get("rol")
-        if rol != Usuario.Rol.REPARTIDOR:
-            cleaned_data["repartidor"] = None
-        return cleaned_data
-
     def save(self, commit=True):
         usuario = super().save(commit=False)
         usuario.set_password(self.cleaned_data["password"])
         usuario.is_staff = usuario.rol == Usuario.Rol.DUENO
         if commit:
-            if usuario.rol == Usuario.Rol.REPARTIDOR and not usuario.repartidor:
-                usuario.repartidor = Repartidor.objects.create(
-                    nombre_repartidor=usuario.nombre,
-                    activo=usuario.activo,
-                )
             usuario.save()
-            if usuario.repartidor and usuario.repartidor.activo != usuario.activo:
-                usuario.repartidor.activo = usuario.activo
-                usuario.repartidor.save(update_fields=["activo"])
         return usuario
 
 
@@ -101,13 +86,6 @@ class UsuarioEditarForm(forms.ModelForm):
             validate_password(password, self.instance)
         return password
 
-    def clean(self):
-        cleaned_data = super().clean()
-        rol = cleaned_data.get("rol")
-        if rol != Usuario.Rol.REPARTIDOR:
-            cleaned_data["repartidor"] = None
-        return cleaned_data
-
     def save(self, commit=True):
         usuario = super().save(commit=False)
         nueva_password = self.cleaned_data.get("nueva_password")
@@ -115,15 +93,7 @@ class UsuarioEditarForm(forms.ModelForm):
             usuario.set_password(nueva_password)
         usuario.is_staff = usuario.rol == Usuario.Rol.DUENO
         if commit:
-            if usuario.rol == Usuario.Rol.REPARTIDOR and not usuario.repartidor:
-                usuario.repartidor = Repartidor.objects.create(
-                    nombre_repartidor=usuario.nombre,
-                    activo=usuario.activo,
-                )
             usuario.save()
-            if usuario.repartidor and usuario.repartidor.activo != usuario.activo:
-                usuario.repartidor.activo = usuario.activo
-                usuario.repartidor.save(update_fields=["activo"])
         return usuario
 
 
@@ -131,14 +101,6 @@ class RepartidorForm(forms.ModelForm):
     class Meta:
         model = Repartidor
         fields = ["nombre_repartidor", "telefono", "activo"]
-
-    def save(self, commit=True):
-        repartidor = super().save(commit=commit)
-        if commit and hasattr(repartidor, "cuenta_usuario") and repartidor.cuenta_usuario:
-            if repartidor.cuenta_usuario.activo != repartidor.activo:
-                repartidor.cuenta_usuario.activo = repartidor.activo
-                repartidor.cuenta_usuario.save(update_fields=["activo"])
-        return repartidor
 
 
 validador_telefono = RegexValidator(
