@@ -1,0 +1,190 @@
+.fondo-pedidos {
+    background-color: #f4f5f7;
+}
+
+.columna-titulo {
+    font-size: 1.25rem;
+    letter-spacing: 0.04em;
+    margin: 0 0 1rem;
+}
+
+/* Columnas por estado (HU-15) */
+.columna {
+    background-color: #fff;
+    border-radius: 0.5rem;
+    border-top: 4px solid #1c7ed6;
+    padding: 1rem;
+}
+
+.columna-preparacion { 
+    border-top-color: #f59f00
+}
+.columna-listo { 
+    border-top-color: #2f9e44
+}
+.columna-camino { 
+    border-top-color: #15aabf
+}
+
+.tarjeta-pedido {
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.pedido-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pedido-folio {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.pedido-cliente {
+    font-weight: 600;
+    margin: 0;
+}
+
+.pedido-productos {
+    font-size: 0.9rem;
+    padding-left: 1.2rem;
+    margin: 0.5rem 0;
+}
+
+.pedido-total {
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Estado, canal y detalle del pedido (HU-13) */
+
+.pedido-detalle {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+.etiqueta-canal {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fff;
+    border-radius: 0.3rem;
+    padding: 0.15rem 0.5rem;
+}
+
+.canal-web { background-color: #1c7ed6; }
+.canal-whatsapp { background-color: #2f9e44; }
+.canal-meson { background-color: #6c757d; }
+
+.contador-columna {
+    float: right;
+    background-color: #1c7ed6;
+    color: #fff;
+    border-radius: 0.3rem;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.8rem;
+}
+.contador-columna-preparacion {
+    float: right;
+    background-color: #f59f00;
+    color: #fff;
+    border-radius: 0.3rem;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.8rem;
+}
+.contador-columna-listo {
+    float: right;
+    background-color: #2f9e44;
+    color: #fff;
+    border-radius: 0.3rem;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.8rem;
+}
+.contador-columna-camino {
+    float: right;
+    background-color: #15aabf;
+    color: #fff;
+    border-radius: 0.3rem;
+    padding: 0.1rem 0.6rem;
+    font-size: 0.8rem;
+}
+
+/* Botón para actualizar el estado (HU-14) */
+.acciones-pedido {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.9rem;
+}
+
+.boton-estado {
+    background-color: #1c7ed6;
+    color: #fff;
+    border: none;
+    border-radius: 0.4rem;
+    padding: 0.45rem;
+    font-size: 0.9rem;
+}
+
+.boton-estado:hover {
+    background-color: #1971c2;
+}
+
+/* Cancelación de pedido con motivo (HU-29) */
+
+.boton-cancelar {
+    background-color: #fff;
+    color: #e03131;
+    border: 1px solid #e03131;
+    border-radius: 0.4rem;
+    padding: 0.4rem;
+    font-size: 0.9rem;
+}
+
+.boton-cancelar:hover {
+    background-color: #e03131;
+    color: #fff;
+}
+
+.ventana {
+    border: none;
+    border-radius: 0.6rem;
+}
+
+.ventana-titulo {
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.etiqueta-campo {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+}
+
+.campo {
+    display: block;
+    width: 100%;
+    border: 1px solid #dee2e6;
+    border-radius: 0.4rem;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.boton-secundario,
+.boton-peligro {
+    border: none;
+    border-radius: 0.4rem;
+    padding: 0.5rem 1rem;
+    color: #fff;
+}
+
+.boton-secundario { background-color: #6c757d; }
+.boton-peligro { background-color: #e03131; }
+.boton-peligro:hover { background-color: #c92a2a; }

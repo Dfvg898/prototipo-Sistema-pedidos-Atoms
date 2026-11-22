@@ -1,0 +1,26 @@
+body {
+    background-color: #f5f6f8;
+    color: #212529;
+}
+.navbar-brand {
+    letter-spacing: 2px;
+}
+.panel {
+    background-color: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 1.25rem;
+    box-shadow: 0 4px 18px rgba(23, 32, 51, 0.04);
+}
+.mensaje-whatsapp {
+    min-height: 150px;
+    padding: 1rem;
+    border: 1px solid #d8eadb;
+    border-radius: 12px;
+    background-color: #f1f8f2;
+    line-height: 1.65;
+    white-space: pre-line;
+}
+.btn-success {
+    background-color: #198754;
+}

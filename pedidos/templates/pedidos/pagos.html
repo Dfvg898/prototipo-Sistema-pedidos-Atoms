@@ -1,0 +1,92 @@
+{% extends "catalogo/base.html" %}
+{% load static %}
+{% block content %}
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="pagos.html">ATOMS</a>
+            <span class="navbar-text">Gestor de pagos y comprobantes</span>
+        </div>
+    </nav>
+
+    <main class="container py-4">
+        <header class="mb-4">
+            <h1 class="h3">Confirmación del pedido</h1>
+            <p class="text-secondary">Selecciona un medio de pago y revisa el resumen de tu compra.</p>
+        </header>
+
+        <div class="row g-4">
+            <section class="col-lg-7">
+                <div class="panel">
+                    <h2 class="h5 mb-3">Medio de pago</h2>
+                    <form method="POST" action="{% url 'seleccionar_pago' pedido.id %}">
+                    {% csrf_token %}
+                        <div class="opcion-pago">
+                            <input class="form-check-input" type="radio" name="medioPago" id="efectivo" value="EFEC" checked req>
+                            <label for="efectivo"><i class="bi bi-cash-coin"></i><span><strong>Efectivo</strong><small>Pago al retirar o recibir el pedido.</small></span></label>
+                        </div>
+                        <div class="opcion-pago">
+                            <input class="form-check-input" type="radio" name="medioPago" id="transferencia" value="TRAN">
+                            <label for="transferencia"><i class="bi bi-bank"></i><span><strong>Transferencia bancaria</strong><small>El pago debe ser verificado por el personal.</small></span></label>
+                        </div>
+                        <div class="opcion-pago">
+                            <input class="form-check-input" type="radio" name="medioPago" id="tarjeta" value="TARJ">
+                            <label for="tarjeta"><i class="bi bi-credit-card"></i><span><strong>Tarjeta</strong><small>Opción de pago ilustrativa.</small></span></label>
+                        </div>
+
+                        <div class="alert alert-info mt-3">
+                            <strong>Datos para transferencia</strong>
+                            <p class="mb-0 mt-1">Banco: Banco de ejemplo<br>Cuenta: 123456789<br>Titular: ATOMS</p>
+                        </div>
+
+                        <div class="mt-3">
+                            <label for="referenciaTransferencia" class="form-label">
+                                Número de operación o referencia de transferencia
+                            </label>
+                            <input type="text"
+                                class="form-control"
+                                id="referenciaTransferencia"
+                                name="referencia_transferencia"
+                                maxlength="100"
+                                placeholder="Ingresa el número de operación">
+                        </div>
+
+                        <div class="mt-4">
+                            <label for="nombreCliente" class="form-label">Nombre del cliente</label>
+                            <input type="text" class="form-control" id="nombreCliente" placeholder="Escribe tu nombre">
+                        </div>
+                        <div class="mt-3">
+                            <label for="observacionPago" class="form-label">Observaciones (opcional)</label>
+                            <textarea class="form-control" id="observacionPago" rows="3" placeholder="Escribe alguna observación"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-4">Confirmar pedido</button>
+                    </form>
+                </div>
+            </section>
+
+            <aside class="col-lg-5">
+                <div class="panel">
+                    <h2 class="h5">Resumen del pedido</h2>
+                    <div class="linea-resumen"><span>1 × Completo italiano</span><span>$2.800</span></div>
+                    <div class="linea-resumen"><span>Queso extra</span><span>$500</span></div>
+                    <div class="linea-resumen"><span>Despacho a domicilio</span><span>$2.000</span></div>
+                    <div class="total-resumen"><span>Total</span><span>$5.300</span></div>
+                </div>
+
+                <div class="panel mt-3">
+                    <h2 class="h5"><i class="bi bi-receipt me-2"></i>Comprobante de pago</h2>
+                    <p class="text-secondary">Vista de ejemplo del comprobante asociado al pedido.</p>
+                    <div class="comprobante">
+                        <p><strong>Folio:</strong> AT-000123</p>
+                        <p><strong>Cliente:</strong> Nombre del cliente</p>
+                        <p><strong>Medio de pago:</strong> Efectivo</p>
+                        <p><strong>Estado:</strong> Pendiente de confirmación</p>
+                        <p class="mb-0"><strong>Total:</strong> $5.300</p>
+                    </div>
+                    <button type="button" class="btn btn-outline-secondary mt-3"><i class="bi bi-printer me-1"></i>Imprimir comprobante</button>
+                </div>
+            </aside>
+        </div>
+    </main>
+</body>
+{% endblock content %}

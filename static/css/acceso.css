@@ -1,0 +1,39 @@
+* {
+    box-sizing: border-box;
+}
+body {
+    min-height: 100vh;
+    margin: 0;
+    background: linear-gradient(135deg, #161a20, #343a40);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem;
+}
+.contenedor-acceso {
+    width: 100%;
+    max-width: 430px;
+}
+.tarjeta-acceso {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 18px;
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.2);
+}
+.icono-acceso {
+    width: 60px;
+    height: 60px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 1rem;
+    border-radius: 16px;
+    background-color: #eaf1ff;
+    color: #0d6efd;
+    font-size: 1.8rem;
+}
+.form-control {
+    padding: 0.7rem;
+}
+.btn-primary {
+    padding: 0.7rem;
+}

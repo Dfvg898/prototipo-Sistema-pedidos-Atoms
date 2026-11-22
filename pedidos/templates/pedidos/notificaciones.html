@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATOMS | Notificaciones</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="notificaciones.css">
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="notificaciones.html">ATOMS</a>
+            <span class="navbar-text">Gestor de notificaciones</span>
+        </div>
+    </nav>
+
+    <main class="container py-4">
+        <header class="mb-4">
+            <h1 class="h3">Notificaciones de pedidos</h1>
+            <p class="text-secondary">Modelos de mensajes para confirmar pedidos y avisar sobre su estado.</p>
+        </header>
+
+        <div class="row g-4">
+            <section class="col-lg-6">
+                <div class="panel">
+                    <h2 class="h5 mb-3">Datos del mensaje</h2>
+                    <div class="mb-3">
+                        <label for="folio" class="form-label">Folio del pedido</label>
+                        <input type="text" id="folio" class="form-control" value="AT-2031">
+                    </div>
+                    <div class="mb-3">
+                        <label for="cliente" class="form-label">Nombre del cliente</label>
+                        <input type="text" id="cliente" class="form-control" value="Camila Rojas">
+                    </div>
+                    <div class="mb-3">
+                        <label for="telefono" class="form-label">Número de WhatsApp</label>
+                        <input type="tel" id="telefono" class="form-control" placeholder="+56 9 1234 5678">
+                    </div>
+                    <div class="mb-3">
+                        <label for="detalle" class="form-label">Detalle del pedido</label>
+                        <textarea id="detalle" class="form-control" rows="3">2 completos italianos y 1 bebida de 500 ml.</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="observaciones" class="form-label">Observaciones del pedido</label>
+                        <textarea id="observaciones" class="form-control" rows="2" placeholder="Ej. Sin tomate, agregar servilletas"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-primary">Preparar mensaje</button>
+                </div>
+            </section>
+
+            <section class="col-lg-6">
+                <div class="panel">
+                    <h2 class="h5 mb-3">Vista previa del mensaje</h2>
+                    <div class="mensaje-whatsapp">
+                        Hola Camila, recibimos tu pedido AT-2031 en ATOMS.
+
+                        Detalle: 2 completos italianos y 1 bebida de 500 ml.
+
+                        Te avisaremos cuando esté listo. ¡Gracias por preferirnos!
+                    </div>
+                    <button type="button" class="btn btn-success mt-3"><i class="bi bi-whatsapp me-1"></i>Abrir WhatsApp</button>
+                    <p class="small text-secondary mt-2 mb-0">El texto es un ejemplo visual. El envío requiere integración adicional.</p>
+                </div>
+
+                <div class="panel mt-3">
+                    <h2 class="h5 mb-3">Aviso de estado del pedido</h2>
+                    <div class="alert alert-warning">
+                        <i class="bi bi-bell-fill me-2"></i><strong>Nuevo pedido recibido</strong>
+                        <p class="mb-0 mt-1">Folio AT-2031 · Estado: En preparación</p>
+                    </div>
+                    <h3 class="h6">Mensaje de pedido listo</h3>
+                    <div class="mensaje-whatsapp">Hola, tu pedido AT-2031 ya está listo. Puedes pasar a retirarlo o esperar la coordinación del despacho.</div>
+                </div>
+            </section>
+        </div>
+    </main>
+</body>
+</html>
