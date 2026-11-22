@@ -1,6 +1,5 @@
 from django.apps import apps
 from django.db.models.deletion import ProtectedError
-from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, logout
@@ -300,19 +299,17 @@ def bitacora_list_view(request):
 @rol_requerido(Usuario.Rol.DUENO, Usuario.Rol.CAJERO)
 @require_GET
 def alertas_pedidos_view(request):
-    return render(request, "usuarios/alertas_pedidos.html")
-
-
-@never_cache
-@rol_requerido(Usuario.Rol.DUENO, Usuario.Rol.CAJERO)
-@require_GET
-def pedidos_recibidos_view(request):
-    if not apps.is_installed("pedidos"):
-        return JsonResponse({"error": "Pedidos no está disponible."}, status=503)
-    Pedido = apps.get_model("pedidos", "Pedido")
-    recibidos = Pedido.objects.filter(estado="RECI")
-    folios = list(recibidos.order_by("-fecha_creacion", "-pk").values_list("folio", flat=True)[:10])
-    return JsonResponse({"total": recibidos.count(), "folios": folios})
+    # Pedidos en estado "Recibido": los que todavía no pasan a preparación
+    pedidos = []
+    if apps.is_installed("pedidos"):
+        Pedido = apps.get_model("pedidos", "Pedido")
+        pedidos = (
+            Pedido.objects.filter(estado="RECI")
+            .select_related("cliente")
+            .prefetch_related("detalle")
+            .order_by("-fecha_creacion", "-pk")
+        )
+    return render(request, "usuarios/alertas_pedidos.html", {"pedidos": pedidos})
 
 
 def datos_entrega_view(request):

@@ -1,19 +1,78 @@
 {% extends "catalogo/base.html" %}
-{% load static %}
+{% load static formato %}
 
-{% block content %}
-<section class="container py-4" data-pedidos-url="{% url 'usuarios_pedidos_recibidos' %}">
-    <h1>Pedidos recibidos</h1>
-    <p id="resumen-pedidos" role="status" aria-live="polite">Consultando pedidos…</p>
-    <ul id="folios-pedidos" class="list-group mb-3"></ul>
-    {% url 'ver_pedidos' as gestion_pedidos %}
-    {% if gestion_pedidos %}<a class="btn btn-primary" href="{{ gestion_pedidos }}">Gestionar pedidos</a>{% endif %}
-    {% url 'lista_delivery' as gestion_entregas %}
-    {% if gestion_entregas %}<a class="btn btn-outline-secondary" href="{{ gestion_entregas }}">Gestión de entregas</a>{% endif %}
-    <noscript><p>Activa JavaScript para ver las alertas.</p></noscript>
-</section>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'usuarios/css/alertas-pedidos.css' %}">
 {% endblock %}
 
-{% block extra_js %}
-<script src="{% static 'usuarios/js/alertas-pedidos.js' %}" defer></script>
+{% block content %}
+<section class="container py-5">
+
+    <header class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+        <div>
+            <h1 class="titulo-pagina">Pedidos recibidos</h1>
+            <p class="text-secondary mb-0">Pedidos nuevos que todavía no pasan a preparación.</p>
+        </div>
+        <a href="{% url 'usuarios_alertas_pedidos' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-clockwise me-1"></i> Actualizar
+        </a>
+    </header>
+
+    <div class="row g-4">
+        <!-- Contador y accesos -->
+        <div class="col-lg-4">
+            <section class="panel panel-contador h-100">
+                <h2>Por atender</h2>
+                <p class="numero-pedidos {% if pedidos %}hay-pedidos{% endif %}">{{ pedidos|length }}</p>
+                <p class="mb-4">pedido{{ pedidos|length|pluralize }} recibido{{ pedidos|length|pluralize }}</p>
+
+                <div class="d-grid gap-2">
+                    {% url 'ver_pedidos' as gestion_pedidos %}
+                    {% if gestion_pedidos %}
+                    <a class="btn btn-primary" href="{{ gestion_pedidos }}"><i class="bi bi-kanban me-1"></i> Gestionar pedidos</a>
+                    {% endif %}
+                    {% url 'lista_delivery' as gestion_entregas %}
+                    {% if gestion_entregas %}
+                    <a class="btn btn-outline-secondary" href="{{ gestion_entregas }}"><i class="bi bi-truck me-1"></i> Gestión de entregas</a>
+                    {% endif %}
+                    {% url 'historial_pedidos' as historial %}
+                    {% if historial %}
+                    <a class="btn btn-outline-secondary" href="{{ historial }}"><i class="bi bi-clock-history me-1"></i> Historial</a>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+
+        <!-- Lista de pedidos recibidos -->
+        <div class="col-lg-8">
+            <section class="panel h-100">
+                <h2>Últimos pedidos recibidos</h2>
+                {% if pedidos %}
+                <ul class="lista-folios">
+                    {% for pedido in pedidos %}
+                    <li class="item-folio">
+                        <i class="bi bi-bell-fill" aria-hidden="true"></i>
+                        <div class="flex-grow-1">
+                            <span class="folio">{{ pedido.folio }}</span>
+                            <small class="d-block text-secondary">
+                                {{ pedido.cliente.nombre }} · {{ pedido.fecha_creacion|date:"H:i" }} · {{ pedido.get_modalidad_entrega_display }}
+                            </small>
+                            <small class="d-block">
+                                {% for d in pedido.detalle.all %}{{ d.cantidad }} × {{ d.nombre_producto }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                            </small>
+                        </div>
+                        <strong class="total">{{ pedido.total|pesos }}</strong>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="lista-vacia">
+                    <i class="bi bi-check2-circle"></i>
+                    No hay pedidos esperando. ¡Todo al día!
+                </p>
+                {% endif %}
+            </section>
+        </div>
+    </div>
+</section>
 {% endblock %}

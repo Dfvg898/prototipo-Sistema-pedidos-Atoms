@@ -279,23 +279,18 @@ class NotificacionesPedidoTests(TestCase):
 
     def test_alertas_filtran_estado_y_restringen_acceso(self):
         panel = reverse("usuarios_alertas_pedidos")
-        datos = reverse("usuarios_pedidos_recibidos")
-        for url in (panel, datos):
-            self.assertEqual(self.client.get(url).status_code, 302)
+        self.assertEqual(self.client.get(panel).status_code, 302)
         self.client.force_login(self.repartidor)
-        for url in (panel, datos):
-            self.assertEqual(self.client.get(url).status_code, 403)
+        self.assertEqual(self.client.get(panel).status_code, 403)
         for cuenta in (self.dueno, self.cajero):
             self.client.force_login(cuenta)
-            self.assertContains(self.client.get(panel), datos)
-            respuesta = self.client.get(datos)
-            self.assertEqual(respuesta.json(), {"total": 1, "folios": [self.recibido.folio]})
-            self.assertIn("no-store", respuesta["Cache-Control"])
-            self.assertEqual(self.client.post(datos).status_code, 405)
+            self.assertContains(self.client.get(panel), self.recibido.folio)
+            self.assertEqual(self.client.post(panel).status_code, 405)
 
+        # Un pedido que pasa a preparación ya no aparece en la lista
         self.recibido.estado = "PREP"
         self.recibido.save(update_fields=["estado"])
-        self.assertEqual(self.client.get(datos).json(), {"total": 0, "folios": []})
+        self.assertNotContains(self.client.get(panel), self.recibido.folio)
 
     def test_cajero_llega_al_panel_tras_iniciar_sesion(self):
         respuesta = self.client.post(reverse("login"), {

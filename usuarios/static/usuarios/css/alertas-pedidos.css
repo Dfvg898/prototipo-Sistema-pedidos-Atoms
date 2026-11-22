@@ -1,0 +1,75 @@
+/* ==========================================================
+   Pedidos recibidos (alertas para Dueño y Cajero)
+   Usa los colores definidos en catalogo/css/atoms.css
+   ========================================================== */
+
+.titulo-pagina {
+    font-size: clamp(2rem, 4vw, 2.6rem);
+    margin-bottom: 0.25rem;
+}
+
+.panel h2 {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+}
+
+/* ---------- Contador grande ---------- */
+.panel-contador { border-top-color: var(--amarillo); }
+
+.numero-pedidos {
+    font-family: var(--fuente-titulo);
+    font-weight: 800;
+    font-size: 6rem;
+    line-height: 1;
+    color: var(--texto-suave);
+    margin: 0 0 0.25rem;
+}
+.numero-pedidos.hay-pedidos { color: var(--naranja-oscuro); }
+
+/* ---------- Lista de pedidos ---------- */
+.lista-folios {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.item-folio {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+    margin-bottom: 0.6rem;
+    border-radius: 0.625rem;
+    border-left: 0.3125rem solid var(--amarillo);
+    background: var(--crema);
+}
+
+.item-folio i { color: var(--naranja); font-size: 1.1rem; }
+
+.item-folio .folio {
+    font-family: var(--fuente-titulo);
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: var(--verde-oscuro);
+    overflow-wrap: anywhere;
+}
+
+.item-folio .total {
+    font-family: var(--fuente-titulo);
+    font-size: 1.4rem;
+    color: var(--naranja-oscuro);
+    white-space: nowrap;
+}
+
+.lista-vacia {
+    text-align: center;
+    color: var(--texto-suave);
+    padding: 2.5rem 0;
+    margin: 0;
+}
+.lista-vacia i {
+    display: block;
+    font-size: 2.5rem;
+    color: var(--verde);
+    margin-bottom: 0.5rem;
+}
