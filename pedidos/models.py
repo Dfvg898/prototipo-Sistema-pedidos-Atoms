@@ -53,8 +53,8 @@ class Pedido(models.Model):
     def calcular_total(self):
         subtotal = 0
 
-        for detalle in self.detalles.all():
-            subtotal += detalle.costo_despacho
+        for detalle in self.detalle.all():
+            subtotal += detalle.subtotal
         return subtotal + self.costo_despacho
 
     def __str__(self):

@@ -1,13 +1,6 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATOMS | Pagos y comprobantes</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="pagos.css">
-</head>
+{% extends "catalogo/base.html" %}
+{% load static %}
+{% block content %}
 <body>
     <nav class="navbar navbar-dark bg-dark">
         <div class="container">
@@ -26,23 +19,36 @@
             <section class="col-lg-7">
                 <div class="panel">
                     <h2 class="h5 mb-3">Medio de pago</h2>
-                    <form>
+                    <form method="POST" action="{% url 'seleccionar_pago' pedido.id %}">
+                    {% csrf_token %}
                         <div class="opcion-pago">
-                            <input class="form-check-input" type="radio" name="medioPago" id="efectivo" checked>
+                            <input class="form-check-input" type="radio" name="medioPago" id="efectivo" value="EFEC" checked req>
                             <label for="efectivo"><i class="bi bi-cash-coin"></i><span><strong>Efectivo</strong><small>Pago al retirar o recibir el pedido.</small></span></label>
                         </div>
                         <div class="opcion-pago">
-                            <input class="form-check-input" type="radio" name="medioPago" id="transferencia">
+                            <input class="form-check-input" type="radio" name="medioPago" id="transferencia" value="TRAN">
                             <label for="transferencia"><i class="bi bi-bank"></i><span><strong>Transferencia bancaria</strong><small>El pago debe ser verificado por el personal.</small></span></label>
                         </div>
                         <div class="opcion-pago">
-                            <input class="form-check-input" type="radio" name="medioPago" id="tarjeta">
+                            <input class="form-check-input" type="radio" name="medioPago" id="tarjeta" value="TARJ">
                             <label for="tarjeta"><i class="bi bi-credit-card"></i><span><strong>Tarjeta</strong><small>Opción de pago ilustrativa.</small></span></label>
                         </div>
 
                         <div class="alert alert-info mt-3">
                             <strong>Datos para transferencia</strong>
                             <p class="mb-0 mt-1">Banco: Banco de ejemplo<br>Cuenta: 123456789<br>Titular: ATOMS</p>
+                        </div>
+
+                        <div class="mt-3">
+                            <label for="referenciaTransferencia" class="form-label">
+                                Número de operación o referencia de transferencia
+                            </label>
+                            <input type="text"
+                                class="form-control"
+                                id="referenciaTransferencia"
+                                name="referencia_transferencia"
+                                maxlength="100"
+                                placeholder="Ingresa el número de operación">
                         </div>
 
                         <div class="mt-4">
@@ -53,7 +59,7 @@
                             <label for="observacionPago" class="form-label">Observaciones (opcional)</label>
                             <textarea class="form-control" id="observacionPago" rows="3" placeholder="Escribe alguna observación"></textarea>
                         </div>
-                        <button type="button" class="btn btn-primary mt-4">Confirmar pedido</button>
+                        <button type="submit" class="btn btn-primary mt-4">Confirmar pedido</button>
                     </form>
                 </div>
             </section>
@@ -83,4 +89,4 @@
         </div>
     </main>
 </body>
-</html>
+{% endblock content %}

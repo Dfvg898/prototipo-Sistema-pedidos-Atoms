@@ -3,9 +3,11 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Q
 from django.views.decorators.http import require_POST
-from .models import Pedido, Pago
+from .models import Cliente, DetallePedido, Pedido, Pago
 from usuarios.decorators import rol_requerido
 from usuarios.models import Usuario, Repartidor
+from catalogo.models import Producto, OpcionPersonalizacion
+from django.db import transaction
 # Create your views here.
 
 #Listar Pedidos
@@ -77,9 +79,10 @@ def historial_pedidos(request):
     if fecha_fin:
         pedidos = pedidos.filter(fecha_creacion__date__lte=fecha_fin)
     if busqueda:
-        pedidos = pedidos.filter(Q(folio__icontains=busqueda) | Q(cliente__nombre_icontains=busqueda))
+        pedidos = pedidos.filter(Q(folio__icontains=busqueda) | Q(cliente__nombre__icontains=busqueda))
     #se refleja los resultados al html
-    return render(request, 'pedidos/histotial.html', {
+#se refleja los resultados al html
+    return render(request, 'pedidos/historial.html', {
         'pedidos': pedidos,
         'fecha_inicio': fecha_inicio,
         'fecha_fin': fecha_fin,
@@ -93,7 +96,7 @@ def seleccionar_pago(request, pedido_id):
     if request.method == 'POST':
         medio_pago = request.POST.get('medio_pago')
         #validamos el medio de pago 
-        medios_validos = [medio[0] for medio in pago.MEDIOS_PAGO]
+        medios_validos = [medio[0] for medio in Pago.MEDIOS_PAGO]
         #se queda en pendiente la trasferencia para su verificacion
         if medio_pago in medios_validos:
             if medio_pago == 'TRAN':
@@ -105,7 +108,7 @@ def seleccionar_pago(request, pedido_id):
                 pedido=pedido,
                 defaults={
                     'medio_pago':medio_pago,
-                    'estado_pago':estado_pago,
+                    'estado':estado_pago,
                     'monto':pedido.total,
                     'referencia_transferencia':request.POST.get(
                         'referencia_transferencia', '').strip()
@@ -117,25 +120,37 @@ def seleccionar_pago(request, pedido_id):
     return render(request, 'pedidos/pagos.html',{
         'pedido':pedido,
         'pago':pago,
-        'medios_pado':Pago.MEDIOS_PAGO,
+        'medios_pago':Pago.MEDIOS_PAGO,
     })
 
 #confirmar pago por transferencia
 @rol_requerido(Usuario.Rol.DUENO, Usuario.Rol.CAJERO)
 @require_POST
+
+@rol_requerido(Usuario.Rol.DUENO, Usuario.Rol.CAJERO)
+@require_POST
 def confirmar_pago_trans(request, pago_id):
     pago = get_object_or_404(Pago, pk=pago_id)
 
-    if (pago.medio_pago == 'TRAN' and pago.estado == 'VERI'):
+    if pago.medio_pago == 'TRAN' and pago.estado == 'VERI':
         pago.estado = 'PAGA'
-        pago.fecha_confirmacion = timezone.now()
+        pago.fecha_registro = timezone.now()
         pago.verificado_por = request.user
 
         pago.save()
-        messages.success(request, 'La transferencia fue confirmada correctamente')
+
+        messages.success(
+            request,
+            'La transferencia fue confirmada correctamente'
+        )
     else:
-        messages.error(request,'Este pago no está pendiente de verificación')
+        messages.error(
+            request,
+            'Este pago no está pendiente de verificación'
+        )
+
     return redirect('historial_pedidos')
+
 
 #listar pedidos delivery
 @rol_requerido(Usuario.Rol.DUENO, Usuario.Rol.CAJERO, Usuario.Rol.REPARTIDOR)
@@ -192,7 +207,7 @@ def notificaciones_pedidos(request):
         if pedido:
             detalle = ''
 
-            for producto in pedido.detalles.all():
+            for producto in pedido.detalle.all():
                 detalle += (
                     f'{producto.cantidad} X ' f'{producto.nombre_producto},')
             mensaje = (
@@ -208,4 +223,150 @@ def notificaciones_pedidos(request):
         'pedido': pedido,
         'mensaje': mensaje,
     })    
-    
+
+@rol_requerido
+def agregar_carrito(request, producto_id):
+    producto = get_object_or_404(Producto, pk=producto_id)
+    carrito = request.session.get('carrito', [])
+    encontrado = False
+
+    for item in carrito:
+        if item['producto_id'] == producto.id:
+            item['cantidad'] += 1
+            item['subtotal'] += item['cantidad'] * item['precio_unitario']
+            encontrado = True
+
+    if not encontrado:
+        item = {
+            'producto_id': producto.id,
+            'nombre_producto': producto.nombre,
+            'precio_unitario': producto.precio_base,
+            'cantidad': 1,
+            'personalizacion': '',
+            'subtotal': producto.precio_base
+        }
+
+        carrito.append(item)
+    request.session['carrito'] = carrito
+    return redirect('lista')
+
+def crear_pedido(request):
+    carrito = request.session.get('carrito', [])
+    datos = request.session.get('datos_entrega_pedido', {})
+
+    if not carrito:
+        messages.error(request, 'Tu carrito está vacío')
+        return redirect('lista')
+    if not datos:
+        messages.error(request, 'Primero debes ingresar tus datos de entrega')
+        return redirect('datos_entrega')
+
+    productos_pedido = []
+    subtotal = 0
+
+    for item in carrito:
+        producto = Producto.objects.filter(pk=item.get('producto_id'), activo=True).first()
+
+        if producto is None:
+            messages.error(request, 'Uno de los productos ya no está disponible')
+            return redirect('lista')
+        try:
+            cantidad = int(item.get('cantidad', 1))
+            precio = int(item.get('precio_unitario', producto.precio_base))
+        except (TypeError, ValueError):
+            messages.error(request, 'Hay datos incorrectos en el carrito')
+            return redirect('lista')
+
+        if cantidad <= 0 or precio < 0:
+            messages.error(request, 'La cantidad o el precio no son válidos')
+            return redirect('lista')
+
+        productos_pedido.append({
+            'producto': producto,
+            'nombre': item.get('nombre_producto', producto.nombre),
+            'precio': precio,
+            'cantidad': cantidad,
+            'personalizacion': item.get('personalizacion', '')})
+        
+        subtotal += precio * cantidad
+
+
+def crear_pedido(request):
+    datos = request.session.get('datos_entrega_pedido')
+    carrito = request.session.get('carrito', [])
+
+    if not datos or not carrito:
+        messages.error(
+            request,
+            'No hay datos de entrega o productos para crear el pedido.'
+        )
+        return redirect('lista')
+
+    subtotal = 0
+    productos_validos = []
+
+    for item in carrito:
+        producto = Producto.objects.filter(
+            pk=item.get('producto_id'),
+            activo=True
+        ).first()
+
+        if producto is None:
+            messages.error(
+                request,
+                'Uno de los productos del carrito ya no está disponible.'
+            )
+            return redirect('lista')
+
+        cantidad = int(item.get('cantidad', 1))
+        precio = int(item.get('precio_unitario', producto.precio_base))
+
+        if cantidad < 1 or precio < 0:
+            messages.error(request, 'Hay un producto con datos inválidos.')
+            return redirect('lista')
+
+        subtotal += precio * cantidad
+        productos_validos.append((item, producto, cantidad, precio))
+
+    costo_despacho = int(datos.get('costo_despacho', 0))
+    total = subtotal + costo_despacho
+
+    if datos.get('modalidad_entrega') == 'DESPACHO':
+        modalidad = 'DESP'
+    else:
+        modalidad = 'LOCA'
+
+    with transaction.atomic():
+        cliente = Cliente.objects.create(
+            nombre=datos.get('nombre_cliente', ''),
+            telefono=datos.get('telefono', ''),
+            correo=''
+        )
+
+        pedido = Pedido.objects.create(
+            cliente=cliente,
+            origen='WEB',
+            modalidad_entrega=modalidad,
+            direccion_entrega=datos.get('direccion', ''),
+            referencia=datos.get('referencia', ''),
+            observaciones=datos.get('observaciones', ''),
+            costo_despacho=costo_despacho,
+            total=total
+        )
+
+        for item, producto, cantidad, precio in productos_validos:
+            DetallePedido.objects.create(
+                pedido=pedido,
+                producto=producto,
+                nombre_producto=item.get('nombre_producto', producto.nombre),
+                precio_unitario=precio,
+                cantidad=cantidad,
+                personalizacion=item.get('personalizacion', '')
+            )
+
+    request.session['carrito'] = []
+    request.session.pop('datos_entrega_pedido', None)
+    request.session.pop('subtotal_carrito', None)
+
+    messages.success(request, 'Tu pedido fue creado correctamente.')
+    return redirect('seleccionar_pago', pedido_id=pedido.id)

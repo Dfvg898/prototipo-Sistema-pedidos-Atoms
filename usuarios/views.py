@@ -301,7 +301,12 @@ def bitacora_list_view(request):
 
 def datos_entrega_view(request):
     datos_guardados = request.session.get("datos_entrega_pedido", {})
-    subtotal = int(request.session.get("subtotal_carrito", 2800))
+    carrito = request.session.get("carrito", [])
+    subtotal = 0
+
+    for item in carrito:
+        subtotal += int(item.get("precio_unitario", 0)) * int(item.get("cantidad", 1))
+    request.session["subtotal_carrito"] = subtotal
 
     if request.method == "POST":
         form = DatosEntregaCheckoutForm(request.POST)
